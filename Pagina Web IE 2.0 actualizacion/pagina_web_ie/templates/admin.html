@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel Admin - I.E. Bolognesi</title>
+  <link rel="icon" href="/static/favicon.ico"> <!-- ✅ AQUÍ -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --color-primario: #0e76a8;
+      --color-fondo: #f5f8fc;
+      --color-panel: #ffffff;
+      --color-texto: #333;
+      --color-hover: #095e89;
+      --borde-radio: 12px;
+      --sombra: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--color-fondo);
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background-color: var(--color-primario);
+      color: white;
+      height: 100vh;
+      position: fixed;
+      padding-top: 30px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.5rem;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      padding: 15px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s ease;
+    }
+
+    .sidebar ul li:hover {
+      background-color: var(--color-hover);
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .main-content {
+      margin-left: 240px;
+      padding: 30px;
+      width: 100%;
+    }
+
+    header {
+      background-color: var(--color-panel);
+      padding: 15px 25px;
+      border-radius: var(--borde-radio);
+      box-shadow: var(--sombra);
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-section {
+      background-color: var(--color-panel);
+      padding: 25px;
+      border-radius: var(--borde-radio);
+      margin-bottom: 30px;
+      box-shadow: var(--sombra);
+    }
+
+    .admin-section h2 {
+      margin-top: 0;
+      color: var(--color-primario);
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    button {
+      background-color: var(--color-primario);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: var(--color-hover);
+    }
+
+    input[type="text"], input[type="file"], select, textarea {
+      width: 100%;
+      margin: 10px 0 20px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .flex {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .file-preview {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table th, table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #f0f0f0;
+    }
+
+    .small-btn {
+      padding: 6px 10px;
+      font-size: 0.9rem;
+    }
+
+    .ayuda p {
+      margin: 0.5rem 0;
+    }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 12px;
+      width: 350px;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Admin Bolognesi</h2>
+    <ul>
+      <li><a href="#matriculas"><i class="fas fa-home"></i> Matrículas</a></li>
+      <li><a href="#imagenes"><i class="fas fa-image"></i> Imágenes</a></li>
+      <li><a href="#textos"><i class="fas fa-book"></i> Textos</a></li>
+      <li><a href="#profesores"><i class="fas fa-chalkboard-teacher"></i> Profesores</a></li>
+      <li><a href="#noticias"><i class="fas fa-newspaper"></i> Noticias</a></li>
+      <li><a href="#slider"><i class="fas fa-sliders-h"></i> Slider</a></li>
+      <li><a href="#pdf"><i class="fas fa-file-pdf"></i> PDFs</a></li>
+      <li><a href="#estadisticas"><i class="fas fa-chart-line"></i> Estadísticas</a></li>
+      <li><a href="#usuarios"><i class="fas fa-user-cog"></i> Usuarios</a></li>
+      <li><a href="#ayuda"><i class="fas fa-circle-question"></i> Ayuda</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <header>
+      <strong>Panel del Administrador</strong>
+      <div id="fecha-hora"></div>
+    </header>
+
+   <!-- Sección: Matrículas -->
+    <div class="admin-section" id="matriculas">
+      <h2>
+        Solicitudes de Matrícula 
+        <span id="total-matriculas" style="font-size: 1rem; color: gray;"></span>
+      </h2>
+
+      <div style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="/exportar_matriculas"><button>📥 Exportar a Excel</button></a>
+        <button onclick="alternarOrdenFecha()" class="small-btn">🕒 Cambiar orden (Fecha)</button>
+      </div>
+
+      <div id="lista-matriculas">
+        <p>Cargando matrículas...</p>
+      </div>
+    </div>    
+    
+    <!-- Sección: Profesores -->
+    <div class="admin-section" id="profesores">
+      <h2>Profesores</h2>
+
+      <!-- Botón para agregar profesor -->
+      <button onclick="agregarProfesor()" class="small-btn" style="margin-bottom: 1rem;">➕ Agregar Profesor</button>
+
+      <div id="lista-profesores">
+        <p>Cargando profesores...</p>
+      </div>
+    </div>
+
+    <!-- Sección: Noticias -->
+    <div class="admin-section" id="noticias">
+      <h2>Noticias</h2>
+
+      <!-- Formulario para agregar noticia -->
+      <label for="titulo-noticia">Título:</label>
+      <input type="text" id="titulo-noticia" placeholder="Título de la noticia">
+
+      <label for="contenido-noticia">Contenido:</label>
+      <textarea id="contenido-noticia" rows="3" placeholder="Contenido..."></textarea>
+
+      <label for="nivel-noticia">Nivel:</label>
+      <select id="nivel-noticia">
+        <option value="primaria">Primaria</option>
+        <option value="secundaria">Secundaria</option>
+      </select>
+
+      <label for="imagen-noticia">Imagen (opcional):</label>
+      <input type="file" id="imagen-noticia" accept="image/*" onchange="previewImage(event, 'img-prev-noticia')">
+      <img id="img-prev-noticia" class="file-preview" style="display:none;">
+
+      <button onclick="publicarNoticia()">📢 Publicar Noticia</button>
+
+      <hr style="margin: 30px 0;">
+
+      <!-- Lista de noticias -->
+      <div id="lista-noticias">
+        <p>Cargando noticias...</p>
+      </div>
+      <template id="noticia-template">
+        <div class="noticia-admin-item" style="margin-bottom:15px;border-left:4px solid #2180a6;padding:10px;background:#f0f4f8;border-radius:8px;">
+          <strong class="noticia-titulo"></strong> <span class="noticia-nivel"></span><br>
+          <p class="noticia-contenido"></p>
+          <img class="noticia-img" style="max-width:150px;margin-top:10px;border-radius:6px;"><br>
+          <button class="btn-editar">✏️ Editar</button>
+          <button class="btn-eliminar">🗑️ Eliminar</button>
+        </div>
+      </template>
+    </div>
+
+    <!-- Sección: Slider -->
+    <div class="admin-section" id="slider">
+      <h2>Imágenes del Carrusel</h2>
+      <form action="/subir-slider" method="POST" enctype="multipart/form-data">
+        <input type="file" name="imagen_slider" accept="image/*" required>
+        <button type="submit">📤 Subir al Slider</button>
+      </form>
+    </div>
+    
+    <!-- Sección: PDFs -->
+    <div class="admin-section" id="pdf">
+      <h2>Subir Archivos PDF</h2>
+      <input type="file" accept=".pdf">
+      <button>📎 Subir Archivo</button>
+    </div>
+
+    <!-- Sección: Estadísticas -->
+    <div class="admin-section" id="estadisticas">
+      <h2>Estadísticas</h2>
+
+      <!-- Datos numéricos -->
+      <div class="flex">
+        <div><strong>👥 Visitas:</strong> <span id="visitas">Cargando...</span></div>
+        <div><strong>📝 Matrículas:</strong> <span id="total-matriculas">Cargando...</span></div>
+        <div><strong>👨‍🏫 Profesores Activos:</strong> <span id="total-profesores">Cargando...</span></div>
+      </div>
+
+
+      <!-- Gráfico de barras -->
+      <canvas id="graficoEstadisticas" width="400" height="200" style="margin-top: 30px;"></canvas>
+    </div>
+
+    <!-- Sección: Usuarios -->
+    <div class="admin-section" id="usuarios">
+      <h2>Usuarios Administrativos</h2>
+
+      <div class="flex">
+        <input type="text" id="nuevo-usuario" placeholder="Nombre de usuario">
+        <input type="password" id="password-usuario" placeholder="Contraseña">
+        <select id="rol-usuario">
+          <option value="">--Seleccionar--</option>          
+          <option value="admin">Administrador</option>
+          <option value="editor">Editor</option>
+          <option value="moderador">Moderador</option>
+          <option value="padre">Padre</option>
+        </select>
+        <button onclick="agregarUsuario()">➕ Agregar Usuario</button>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h3>Lista de usuarios</h3>
+        <div id="lista-usuarios">
+          <p>Cargando usuarios...</p>
+        </div>
+      </div>
+    </div>
+    <!-- Sección: Personas Registradas -->
+    <div class="admin-section" id="personas-registradas">
+      <h2>Personas Registradas</h2>
+      <p>Usuarios que se han registrado por su cuenta. Asigna sus roles manualmente.</p>
+      <div id="lista-registrados">
+        <p>Cargando usuarios registrados...</p>
+      </div>
+    </div>
+
+    <div class="admin-section ayuda" id="ayuda">
+      <h2>¿Cómo funciona este panel?</h2>
+
+      <p><strong>📥 Matrículas:</strong> En esta sección puedes visualizar todas las solicitudes de matrícula enviadas desde la página principal por los usuarios. Cada registro contiene los datos personales del estudiante y su apoderado. Tienes la opción de <strong>aprobar</strong> o <strong>rechazar</strong> la solicitud. También puedes cambiar el orden de visualización por fecha y <strong>exportar la lista en formato Excel</strong> para llevar un control externo.</p>
+
+      <p><strong>🖼 Imágenes:</strong> Aquí puedes actualizar las imágenes del slider principal de la página web, así como el logotipo institucional si fuera necesario. Estas imágenes se muestran en la página principal como presentación dinámica, por lo que es recomendable mantenerlas actualizadas.</p>
+
+      <p><strong>📖 Textos:</strong> Desde esta sección puedes modificar el contenido de los textos fundamentales de la institución, como la <strong>misión</strong>, <strong>visión</strong> e <strong>historia</strong>. Estos textos se reflejan automáticamente en la web pública para que la comunidad educativa tenga acceso a información clara y actualizada.</p>
+
+      <p><strong>👨‍🏫 Profesores:</strong> Puedes registrar nuevos profesores con nombre, área de enseñanza y foto. También tienes la posibilidad de <strong>editar</strong> su información o <strong>eliminarlos</strong> del sistema. Los datos registrados se visualizan en la sección correspondiente de la web principal.</p>
+
+      <p><strong>📰 Noticias:</strong> Esta sección permite <strong>publicar anuncios importantes</strong> para la comunidad educativa, como eventos, comunicados o novedades. Puedes agregar un título, contenido, nivel educativo (Primaria o Secundaria) y una imagen opcional. Además, puedes <strong>editar o eliminar</strong> noticias existentes fácilmente.</p>
+
+      <p><strong>📎 PDFs:</strong> Desde aquí puedes <strong>subir archivos en formato PDF</strong> que estarán disponibles para su descarga pública. Pueden ser documentos como horarios, reglamentos o comunicados oficiales.</p>
+
+      <p><strong>📊 Estadísticas:</strong> Muestra datos en tiempo real sobre la <strong>cantidad de visitas</strong> al sitio, <strong>número total de matrículas recibidas</strong> y <strong>profesores activos registrados</strong>. Además, se presenta un <strong>gráfico de barras</strong> dinámico con estos indicadores para facilitar el análisis visual.</p>
+
+      <p><strong>👤 Usuarios:</strong> Puedes <strong>agregar nuevos usuarios administrativos</strong> (Administrador, Editor, Moderador o Padre) asignándoles su respectivo rol y contraseña. Esta sección también muestra una lista de los usuarios ya registrados.</p>
+
+      <p><strong>🆕 Personas Registradas:</strong> Aquí puedes ver los usuarios que se han registrado desde la página principal. Su rol puede estar pendiente, por lo que desde esta sección puedes <strong>asignarles manualmente un rol</strong> administrativo según corresponda.</p>
+
+      <p><strong>❓ Ayuda:</strong> Esta misma sección te orienta sobre el uso de todo el panel. Si tienes dudas adicionales, puedes comunicarte con el equipo de desarrollo del sitio o revisar la documentación técnica del sistema.</p>
+    </div>
+    <!-- Modal Agregar Profesor -->
+    <div id="modal-agregar" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Agregar Profesor</h3>
+        <form id="form-agregar">
+          <label>Nombre:</label>
+          <input type="text" id="agregar-nombre" required>
+          <label>Área:</label>
+          <input type="text" id="agregar-area" required>
+          <label>Foto (opcional):</label>
+          <input type="text" id="agregar-foto" placeholder="user.jpg">
+          <div style="margin-top:10px;">
+            <button type="submit">Agregar</button>
+            <button type="button" onclick="cerrarModalAgregar()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Modal Editar Profesor -->
+    <div id="modal-editar" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Editar Profesor</h3>
+        <form id="form-editar">
+          <input type="hidden" id="editar-id">
+          <label>Nombre:</label>
+          <input type="text" id="editar-nombre" required>
+          <label>Área:</label>
+          <input type="text" id="editar-area" required>
+          <label>Foto:</label>
+          <input type="text" id="editar-foto">
+          <div style="margin-top:10px;">
+            <button type="submit">Guardar</button>
+            <button type="button" onclick="cerrarModalEditar()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let ordenFecha = 'DESC'; // Inicia mostrando las más recientes
+
+    function previewImage(event, id) {
+      const output = document.getElementById(id);
+      output.src = URL.createObjectURL(event.target.files[0]);
+      output.style.display = 'block';
+    }
+
+    function actualizarFechaHora() {
+      const opciones = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      document.getElementById('fecha-hora').innerText = new Date().toLocaleDateString('es-ES', opciones);
+    }
+
+    setInterval(actualizarFechaHora, 1000);
+    actualizarFechaHora();
+
+    async function cargarMatriculas() {
+      const res = await fetch(`/api/matriculas?orden=${ordenFecha}`);
+      const data = await res.json();
+      const cont = document.getElementById('lista-matriculas');
+      const totalMat = document.getElementById('total-matriculas');
+      cont.innerHTML = '';
+      totalMat.innerText = data.length;
+
+      if (data.length === 0) {
+        cont.innerHTML = '<p>No hay solicitudes pendientes.</p>';
+        return;
+      }
+
+      data.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'admin-card';
+        div.innerHTML = `
+          <strong>Nombre del Estudiante:</strong> ${m.nombre_estudiante}<br>
+          <strong>Edad:</strong> ${m.edad}<br>
+          <strong>DNI del Estudiante:</strong> ${m.dni_estudiante}<br>
+          <strong>Grado:</strong> ${m.grado}<br>
+          <strong>Colegio Anterior:</strong> ${m.colegio_anterior}<br>
+          <strong>Nombre del Apoderado:</strong> ${m.nombre_tutor}<br>
+          <strong>DNI del Apoderado:</strong> ${m.dni_tutor}<br>
+          <strong>Dirección:</strong> ${m.direccion}<br>
+          <strong>Teléfono:</strong> ${m.telefono}<br>
+          <strong>Correo:</strong> ${m.email}<br>
+          <strong>Condiciones Médicas:</strong> ${m.condiciones}<br>
+          <strong>Vacunado:</strong> ${m.vacunado}<br>
+          <strong>Observaciones:</strong> ${m.observaciones}<br>
+          <div class="flex" style="margin-top:10px;">
+            <button class="small-btn" onclick="aprobarMatricula('${m.id}')">✅ Aprobar</button>
+            <button class="small-btn" style="background:#c0392b;" onclick="rechazarMatricula('${m.id}')">❌ Rechazar</button>
+          </div>`;
+        cont.appendChild(div);
+      });
+    }
+
+    async function aprobarMatricula(id) {
+      await fetch(`/aprobar_matricula/${id}`, { method: 'POST' });
+      cargarMatriculas();
+    }
+
+    async function rechazarMatricula(id) {
+      await fetch(`/rechazar_matricula/${id}`, { method: 'POST' });
+      cargarMatriculas();
+    }
+
+    function alternarOrdenFecha() {
+      ordenFecha = ordenFecha === 'DESC' ? 'ASC' : 'DESC';
+      cargarMatriculas();
+    }
+
+    window.onload = () => {
+    cargarMatriculas();
+    cargarProfesores(); // <-- esta línea llama a tu función para cargar profesores
+    cargarUsuarios(); // ✅ Para que cargue la lista al entrar
+    cargarNoticias();
+    cargarRegistrados(); 
+    cargarGraficoEstadisticas(); // <-- esto es nuevo
+
+    };
+
+    async function cargarProfesores() {
+      const res = await fetch('/api/profesores');
+      const data = await res.json();
+      console.log("Profesores recibidos:", data.length, data);
+      const cont = document.getElementById('lista-profesores');
+      cont.innerHTML = '';
+
+      if (data.length === 0) {
+        cont.innerHTML = '<p>No hay profesores registrados.</p>';
+        return;
+      }
+
+      const tabla = document.createElement('table');
+      tabla.innerHTML = `
+        <thead>
+          <tr><th>Nombre</th><th>Área</th><th>Foto</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+          ${data.map(p => `
+            <tr>
+              <td>${p.nombre}</td>
+              <td>${p.area}</td>
+              <td><img src="/static/img/${p.foto}" width="50"></td>
+              <td>
+               <button class="small-btn" onclick="editarProfesor(${p.id})">✏️ Editar</button>
+                <button class="small-btn" style="background:#e74c3c;" onclick="eliminarProfesor(${p.id})">🗑 Eliminar</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      cont.appendChild(tabla);
+    }
+
+    async function agregarUsuario() {
+    const username = document.getElementById('nuevo-usuario').value.trim();
+    const password = document.getElementById('password-usuario').value.trim();
+    const rol = document.getElementById('rol-usuario').value;
+
+    if (!username || !password || !rol) {
+      alert("Por favor completa todos los campos.");
+      return;
+    }
+
+    const res = await fetch('/agregar_usuario', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, rol })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert(data.message);
+      document.getElementById('nuevo-usuario').value = '';
+      document.getElementById('password-usuario').value = '';
+      cargarUsuarios(); // recargar lista
+    } else {
+      alert(data.error || 'Error al agregar usuario');
+    }
+    }
+
+    async function cargarUsuarios() {
+    const res = await fetch('/api/usuarios');
+    const data = await res.json();
+    const cont = document.getElementById('lista-usuarios');
+
+    if (data.length === 0) {
+      cont.innerHTML = '<p>No hay usuarios registrados.</p>';
+      return;
+    }
+
+    let html = `
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Usuario</th><th>Rol</th></tr>
+        </thead>
+        <tbody>
+          ${data.map(u => `
+            <tr>
+              <td>${u.id}</td>
+              <td>${u.username}</td>
+              <td>${u.rol}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+    cont.innerHTML = html;
+    }
+
+    async function publicarNoticia() {
+    const titulo = document.getElementById('titulo-noticia').value.trim();
+    const contenido = document.getElementById('contenido-noticia').value.trim();
+    const nivel = document.getElementById('nivel-noticia').value;
+    const imagen = document.getElementById('imagen-noticia').files[0];
+
+    if (!titulo || !contenido || !nivel) {
+      alert("Completa todos los campos obligatorios.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('contenido', contenido);
+    formData.append('nivel', nivel);
+    if (imagen) {
+      formData.append('imagen', imagen);
+    }
+
+    const url = editandoNoticiaId ? `/editar_noticia/${editandoNoticiaId}` : '/agregar_noticia';
+    const res = await fetch(url, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert(data.message);
+      document.getElementById('titulo-noticia').value = '';
+      document.getElementById('contenido-noticia').value = '';
+      document.getElementById('nivel-noticia').value = 'primaria';
+      document.getElementById('imagen-noticia').value = '';
+      document.getElementById('img-prev-noticia').style.display = 'none';
+      cargarNoticias();
+    } else {
+      alert(data.error || 'Error al publicar noticia');
+    }
+    }
+
+    let editandoNoticiaId = null;
+
+    async function cargarNoticias() {
+    const res = await fetch('/api/noticias');
+    const noticias = await res.json();
+    const cont = document.getElementById('lista-noticias');
+    cont.innerHTML = '';
+
+    if (noticias.length === 0) {
+      cont.innerHTML = '<p>No hay noticias registradas.</p>';
+      return;
+    }
+
+    const primaria = noticias.filter(n => n.nivel === 'primaria');
+    const secundaria = noticias.filter(n => n.nivel === 'secundaria');
+
+    if (primaria.length > 0) {
+      const divPrim = document.createElement('div');
+      divPrim.innerHTML = '<h4 style="color:#2d80b3">Noticias de Primaria</h4>';
+      primaria.forEach(n => {
+        divPrim.innerHTML += `
+          <div class="admin-card">
+            <strong>${n.fecha} - ${n.titulo}</strong><br>
+            <p>${n.contenido}</p>
+            ${n.imagen ? `<img src="/static/img/${n.imagen}" width="150" style="margin-top:10px;border-radius:6px;">` : ''}
+            <div class="flex" style="margin-top:10px;">
+              <button class="small-btn" onclick="editarNoticia(${n.id}, '${n.titulo.replace(/'/g, "\\'")}', '${n.contenido.replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${n.nivel}')">✏️ Editar</button>
+              <button class="small-btn" style="background:#c0392b;" onclick="eliminarNoticia(${n.id})">🗑️ Eliminar</button>
+            </div>
+          </div>`;
+      });
+      cont.appendChild(divPrim);
+    }
+
+    if (secundaria.length > 0) {
+    const divSec = document.createElement('div');
+    divSec.innerHTML = '<h4 style="color:#8c4c2b">Noticias de Secundaria</h4>';
+    secundaria.forEach(n => {
+      divSec.innerHTML += `
+        <div class="admin-card">
+          <strong>${n.fecha} - ${n.titulo}</strong><br>
+          <p>${n.contenido}</p>
+          ${n.imagen ? `<img src="/static/noticias/${n.imagen}" width="150" style="margin-top:10px;border-radius:6px;">` : ''}
+          <div class="flex" style="margin-top:10px;">
+            <button class="small-btn" onclick="editarNoticia(${n.id}, '${n.titulo.replace(/'/g, "\\'")}', '${n.contenido.replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${n.nivel}')">✏️ Editar</button>
+            <button class="small-btn" style="background:#c0392b;" onclick="eliminarNoticia(${n.id})">🗑️ Eliminar</button>
+          </div>
+        </div>`;
+    });
+    cont.appendChild(divSec);
+    }
+    }
+
+    function editarNoticia(id, titulo, contenido, nivel) {
+      document.getElementById('titulo-noticia').value = titulo;
+      document.getElementById('contenido-noticia').value = contenido;
+      document.getElementById('nivel-noticia').value = nivel;
+      editandoNoticiaId = id;
+      alert("Estás editando una noticia. Al hacer clic en 'Publicar Noticia' se guardarán los cambios.");
+    }
+
+    async function eliminarNoticia(id) {
+      if (confirm("¿Deseas eliminar esta noticia?")) {
+        const res = await fetch(`/eliminar_noticia/${id}`, {
+          method: 'DELETE'
+        });
+        const data = await res.json();
+        alert(data.message || 'Noticia eliminada');
+        cargarNoticias();
+      }
+    }
+    function cancelarEdicion() {
+      editandoNoticiaId = null;
+      document.getElementById('titulo-noticia').value = '';
+      document.getElementById('contenido-noticia').value = '';
+      document.getElementById('nivel-noticia').value = 'primaria';
+      document.getElementById('imagen-noticia').value = '';
+      document.getElementById('img-prev-noticia').style.display = 'none';
+    }
+
+    async function cargarRegistrados() {
+      const cont = document.getElementById('lista-registrados');
+      const res = await fetch('/api/registrados');
+      const data = await res.json();
+      cont.innerHTML = '';
+
+      if (data.length === 0) {
+        cont.innerHTML = '<p>No hay personas registradas.</p>';
+        return;
+      }
+
+      const tabla = document.createElement('table');
+      tabla.innerHTML = `
+        <thead>
+          <tr><th>ID</th><th>Usuario</th><th>Rol Actual</th><th>Asignar Nuevo Rol</th><th>Acción</th></tr>
+        </thead>
+        <tbody>
+          ${data.map(u => `
+            <tr>
+              <td>${u.id}</td>
+              <td>${u.username}</td>
+              <td>${u.rol || 'Sin asignar'}</td>
+              <td>
+                <select id="rol-select-${u.id}">
+                  <option value="">--Seleccionar--</option>
+                  <option value="Administrador">Administrador</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Moderador">Moderador</option>
+                  <option value="Padre">Padre</option>
+                </select>
+              </td>
+              <td><button onclick="asignarRol(${u.id})">✅ Asignar</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      cont.appendChild(tabla);
+    }
+
+    async function asignarRol(id) {
+      const select = document.getElementById(`rol-select-${id}`);
+      const rol = select.value;
+
+      if (!rol) {
+        alert("Selecciona un rol válido.");
+        return;
+      }
+
+      const res = await fetch(`/asignar_rol/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rol })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message || 'Rol asignado correctamente.');
+        cargarRegistrados(); // Refrescar tabla
+      } else {
+        alert(data.error || 'Error al asignar rol.');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    cargarGraficoEstadisticas();
+    });
+
+    async function cargarGraficoEstadisticas() {
+      const res = await fetch('/api/estadisticas');
+      const data = await res.json();
+
+      document.getElementById('visitas').innerText = data.visitas;
+      document.getElementById('total-matriculas').innerText = data.matriculas;
+      document.getElementById('total-profesores').innerText = data.profesores;
+
+      const ctx = document.getElementById('graficoEstadisticas').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Visitas', 'Matrículas', 'Profesores'],
+          datasets: [{
+            label: 'Totales del sistema',
+            data: [data.visitas, data.matriculas, data.profesores],
+            backgroundColor: ['#4bc0c0', '#ff9f40', '#9966ff'],
+            borderColor: ['#3aa8a8', '#ff8c33', '#7d4fe0'],
+            borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+      });
+    }
+    // Mostrar modal de agregar
+    function agregarProfesor() {
+      document.getElementById('agregar-nombre').value = '';
+      document.getElementById('agregar-area').value = '';
+      document.getElementById('agregar-foto').value = 'user.jpg';
+      document.getElementById('modal-agregar').style.display = 'block';
+    }
+
+    // Enviar nuevo profesor
+    document.getElementById('form-agregar').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('agregar-nombre').value.trim();
+      const area = document.getElementById('agregar-area').value.trim();
+      const foto = document.getElementById('agregar-foto').value.trim() || 'user.jpg';
+
+      if (!nombre || !area) {
+        alert('Nombre y área son obligatorios.');
+        return;
+      }
+
+      fetch('/api/profesores', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ nombre, area, foto })
+      })
+        .then(res => res.json())
+        .then(() => {
+          cerrarModalAgregar();
+          cargarProfesores();
+        });
+    });
+
+    // Mostrar modal de edición
+    function editarProfesor(id) {
+      fetch('/api/profesores')
+        .then(res => res.json())
+        .then(profesores => {
+          const p = profesores.find(x => x.id === id);
+          if (!p) return alert('Profesor no encontrado');
+
+          document.getElementById('editar-id').value = p.id;
+          document.getElementById('editar-nombre').value = p.nombre;
+          document.getElementById('editar-area').value = p.area;
+          document.getElementById('editar-foto').value = p.foto || 'user.jpg';
+
+          document.getElementById('modal-editar').style.display = 'block';
+        });
+    }
+
+    // Enviar edición
+    document.getElementById('form-editar').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const id = document.getElementById('editar-id').value;
+      const nombre = document.getElementById('editar-nombre').value.trim();
+      const area = document.getElementById('editar-area').value.trim();
+      const foto = document.getElementById('editar-foto').value.trim() || 'user.jpg';
+
+      if (!nombre || !area) {
+        alert('Nombre y área son obligatorios.');
+        return;
+      }
+
+      fetch(`/api/profesores/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ nombre, area, foto })
+      })
+        .then(res => res.json())
+        .then(() => {
+          cerrarModalEditar();
+          cargarProfesores();
+        });
+    });
+
+    // Eliminar profesor
+    function eliminarProfesor(id) {
+      if (!confirm("¿Estás seguro de eliminar este profesor?")) return;
+
+      fetch(`/api/profesores/${id}`, {
+        method: 'DELETE'
+      })
+        .then(res => res.json())
+        .then(() => cargarProfesores());
+    }
+
+    // Cerrar modales
+    function cerrarModalAgregar() {
+      document.getElementById('modal-agregar').style.display = 'none';
+    }
+
+    function cerrarModalEditar() {
+      document.getElementById('modal-editar').style.display = 'none';
+    }
+
+
+  </script>
+
+  
+</body>
+</html> 

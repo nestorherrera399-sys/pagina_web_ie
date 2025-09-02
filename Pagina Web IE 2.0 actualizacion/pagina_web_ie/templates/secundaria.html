@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secundaria - IE Francisco Bolognesi</title>
+  <link rel="stylesheet" href="/pagina_web_ie/static/style.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: sans-serif;
+    }
+
+    /* HEADER COMPLETO */
+    .header {
+      background-color: #f8f8f8;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      height: 50px;
+    }
+
+    .titulo-ie {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #000;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-size: 16px;
+      padding-bottom: 4px;
+      transition: color 0.3s, border-bottom 0.3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links .active {
+      color: #d32f2f;
+      border-bottom: 2px solid #d32f2f;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      padding: 120px 20px 40px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    section {
+      margin-bottom: 3rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1s ease;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h2 {
+      color: #1a237e;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    h3 {
+      color: #1a237e;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      line-height: 1.6;
+    }
+
+    /* PROFESORES */
+    .profesores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .profesor-card {
+      background: #fff;
+      border: 2px solid #9fa8da;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+    }
+
+    .profesor-card:hover {
+      background: #e8eaf6;
+      transform: translateY(-5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    /* MODAL DOCENTE */
+    #perfilModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 360px;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-content img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      border: 3px solid #1a237e;
+    }
+
+    .close-btn {
+      margin-top: 20px;
+      background: #1a237e;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* NOTICIAS */
+    .news-item {
+      background: #fff;
+      border-left: 6px solid #1a237e;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: background 0.3s;
+    }
+
+    .news-item:hover {
+      background: #e3f2fd;
+    }
+
+    .news-title {
+      font-size: 1.25rem;
+      color: #0d47a1;
+      margin-bottom: 5px;
+    }
+
+    .news-date {
+      font-size: 0.85rem;
+      color: gray;
+      margin-bottom: 8px;
+    }
+
+    /* GALERÍA */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      border-radius: 8px;
+      transition: transform 0.3s;
+    }
+
+    .gallery-item img:hover {
+      transform: scale(1.05);
+    }
+
+    /* HORARIO Y DOCUMENTOS */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background: #1a237e;
+      color: #fff;
+    }
+
+    /* TESTIMONIOS */
+    .testimonial-form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+
+    .testimonial-form input,
+    .testimonial-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .testimonial-form button {
+      background: #d32f2f;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .testimonial-item {
+      background: #fff;
+      border-left: 6px solid #d32f2f;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .testimonial-item p {
+      margin: 0;
+    }
+
+    .testimonial-author {
+      margin-top: 8px;
+      font-weight: bold;
+      color: #d32f2f;
+    }
+
+    /* FOOTER */
+    .footer-main {
+      background-color: #294d7a;
+      color: #dce6f2;
+      text-align: center;
+      padding: 20px 10px;
+      margin-top: 60px;
+      font-size: 1rem;
+    }
+
+    .footer-main a {
+      color: #f0b849;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .footer-main a:hover {
+      color: #d6a90e;
+    }
+
+    /* Fondo gris y centrado de imagen */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(0, 0, 0, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .lightbox-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+      cursor: zoom-out;
+    }
+
+    .lightbox-overlay img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      border: 4px solid white;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .news-card {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .news-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .news-card:hover {
+      transform: scale(1.02);
+    }
+
+    .news-card h3 {
+      margin: 10px 15px 0 15px;
+      color: #0d47a1;
+    }
+
+    .news-card p {
+      margin: 5px 15px 15px 15px;
+      color: #444;
+    }
+
+    .news-date {
+      font-size: 0.85rem;
+      color: gray;
+    }
+    /* Modal de noticias */
+    .noticia-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(0, 0, 0, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .noticia-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .noticia-content {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .noticia-content img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      filter: grayscale(30%) brightness(90%);
+    }
+
+    .noticia-content .close-btn {
+      background: #d32f2f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-size: 1rem;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <header class="header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 20px; box-sizing: border-box; width: 100%; max-width: 100%; overflow-x: hidden;">
+    <div class="logo-container" style="display: flex; align-items: center; gap: 10px;">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo IE Francisco Bolognesi" class="logo" style="height: 50px;">
+      <h1 style="color: black; font-size: 24px; margin: 0;">IE Francisco Bolognesi</h1>
+    </div>
+    <nav class="nav-links" style="display: flex; gap: 15px; flex-wrap: wrap; max-width: 100%;">
+      <a href="{{ url_for('index') }}">Inicio</a>
+      <a href="{{ url_for('primaria') }}">Primaria</a>
+      <a href="{{ url_for('secundaria') }}">Secundaria</a>
+    </nav>
+  </header>
+  <main class="container">
+    <!-- Intro -->
+    <section class="fade-in">
+      <h2>Bienvenidos a Secundaria</h2>
+      <p>Formamos líderes con pensamiento crítico, valores y competencias para afrontar los desafíos del siglo XXI.</p>
+    </section> 
+
+    <h3 style="margin-top:2rem;">Docentes de Secundaria</h3>
+    <div class="profesores-grid fade-in">
+      <button class="profesor-card" onclick="mostrarPerfil('Leo Acostupa Chura', 'leo.jpg', 'DPCC / Educación para el Trabajo')">👤 Leo Acostupa Chura<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Blanca Berroa Toala', 'blanca.jpg', 'Ciencia y Tecnología')">👤 Blanca Berroa Toala<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Nicolasa Flores Machaca', 'nicolasa.jpg', 'Matemáticas')">👤 Nicolasa Flores Machaca<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Janet Flores Laura', 'janet.jpg', 'Comunicación')">👤 Janet Flores Laura<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Richard Palacios Garibaldi', 'richard.jpg', 'Comunicación')">👤 Richard Palacios Garibaldi<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Juan Carlos Juárez Amézquita', 'juancarlos.jpg', 'Ciencias Sociales')">👤 Juan Carlos Juárez Amézquita<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('María Yullli Ranilla', 'maria.jpg', 'Ciencias Sociales')">👤 María Yullli Ranilla<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Isabel Herrera Rosas', 'isabel.jpg', 'Ciencia y Tecnología')">👤 Isabel Herrera Rosas<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Elvis Santos Ticona', 'elvis.jpg', 'Ciencia y Tecnología')">👤 Elvis Santos Ticona<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Ana Soto Mamani', 'ana.jpg', 'Ciencia y Tecnología')">👤 Ana Soto Mamani<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Lucy Arpasi Limachi', 'lucy.jpg', 'Arte')">👤 Lucy Arpasi Limachi<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Jhon Júpiter Quispe Montoya', 'jhon.jpg', 'Inglés')">👤 Jhon Júpiter Quispe Montoya<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Edward Yufra Coaquira', 'edward.jpg', 'Inglés')">👤 Edward Yufra Coaquira<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Reyna Zea Apaza', 'reyna.jpg', 'Religión')">👤 Reyna Zea Apaza<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Pamela Zegarra Meza', 'pamela_z.jpg', 'Matemáticas')">👤 Pamela Zegarra Meza<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Jorge Torres Garate', 'jorge.jpg', 'Matemáticas')">👤 Jorge Torres Garate<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Carmen Ordoñez Condori', 'carmen.jpg', 'Educación Física')">👤 Carmen Ordoñez Condori<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Teresa Ortiz Hurtado', 'teresa.jpg', 'Educación para el Trabajo')">👤 Teresa Ortiz Hurtado<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Filete Tincos Quispe', 'filete.jpg', 'DPCC')">👤 Filete Tincos Quispe<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Nancy Ticona Quispe', 'nancy.jpg', 'Educación Física')">👤 Nancy Ticona Quispe<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Lupe Mosaja Bejarano', 'lupe.jpg', 'Auxiliar')">👤 Lupe Mosaja Bejarano<br><span>Docente Secundaria</span></button>
+      <button class="profesor-card" onclick="mostrarPerfil('Pamela Moreno Quijandría', 'pamela_m.jpg', 'Auxiliar')">👤 Pamela Moreno Quijandría<br><span>Docente Secundaria</span></button>
+    </div>
+
+    <section class="fade-in">
+      <h2>Noticias</h2>
+      {% if noticias %}
+        <div class="news-grid">
+          {% for n in noticias %}
+          <article class="news-card"
+              class="noticia-item"
+              data-titulo="{{ n.titulo }}"
+              data-fecha="{{ n.fecha.strftime('%d de %B de %Y') }}"
+              data-contenido="{{ n.contenido }}"
+              data-imagen="{{ url_for('static', filename='noticias/' + n.imagen) if n.imagen else '' }}">
+            {% if n.imagen %}
+              <img src="{{ url_for('static', filename='noticias/' + n.imagen) }}" alt="{{ n.titulo }}">
+            {% else %}
+              <img src="/static/img/default-news.png" alt="Sin imagen">
+            {% endif %}
+            <div>
+              <h3>{{ n.titulo }}</h3>
+              <p class="news-date">{{ n.fecha.strftime('%d de %B de %Y') }}</p>
+              <p>{{ n.contenido[:100] }}{{ '...' if n.contenido|length > 100 else '' }}</p>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No hay noticias registradas aún.</p>
+      {% endif %}
+    </section>
+
+    <section class="fade-in">
+      <h2>Galería de Actividades</h2>
+      <div class="gallery-grid">
+        <div class="gallery-item"><img src="/static/img/actividad1.png" alt="Actividad 1"></div>
+        <div class="gallery-item"><img src="/static/img/actividad2.jpg" alt="Actividad 2"></div>
+        <div class="gallery-item"><img src="/static/img/actividad3.jpg" alt="Actividad 3"></div>
+        <div class="gallery-item"><img src="/static/img/actividad4.jpg" alt="Actividad 4"></div>
+      </div>
+    </section>
+
+    <!-- Horario -->
+    <section class="fade-in">
+      <h2>Horario General</h2>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Día</th><th>08:00–12:00</th><th>13:00–15:00</th></tr></thead>
+          <tbody><tr><td>Lun–Vie</td><td>Clases y sesiones académicas<br>Monitoreo personalizado</td><td>Proyectos, talleres y reforzamiento</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Documentos -->
+    <section class="fade-in">
+      <h2>Documentos Útiles</h2>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Documento</th><th>Enlace</th></tr></thead>
+          <tbody>
+            <tr><td>Reglamento Interno</td><td><a href="static/docs/reglamento.pdf" target="_blank">Descargar PDF</a></td></tr>
+            <tr><td>Plan de Estudios 2025</td><td><a href="static/docs/plan_estudios.pdf" target="_blank">Descargar PDF</a></td></tr>
+            <tr><td>Guía de Padres y Apoderados</td><td><a href="static/docs/guia_padres.pdf" target="_blank">Descargar PDF</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="fade-in">
+      <h2>Testimonios y Logros</h2>
+      <form action="/submit_testimonio" method="POST" class="testimonial-form">
+        <input type="text" name="nombre" placeholder="Nombres y Apellidos" required>
+        <input type="email" name="correo" placeholder="Correo electrónico (debe incluir tu nombre)" required>
+        <textarea name="mensaje" placeholder="Tu testimonio..." rows="4" required></textarea>
+        <input type="hidden" name="nivel" value="Secundaria">
+        <button type="submit">Enviar Testimonio</button>
+      </form>
+      <div id="testimonios">
+        {% for testimonio in testimonios %}
+        <div class="testimonial-item">
+          <p>"{{ testimonio.testimonio }}"</p>
+          <p class="testimonial-author">— {{ testimonio.nombre }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal docente -->
+  <div id="perfilModal">
+    <div class="modal-content">
+      <img id="fotoProfesor" src="" alt="Foto docente">
+      <h3 id="nombreProfesor"></h3>
+      <p id="gradoProfesor"></p>
+      <button class="close-btn" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <div id="modal-noticia" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModalNoticia()">&times;</span>
+      <h3 id="modal-titulo"></h3>
+      <p id="modal-fecha" class="news-date"></p>
+      <img id="modal-imagen" src="" alt="" style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;">
+      <p id="modal-contenido" style="margin-top: 10px;"></p>
+    </div>
+  </div>
+  <!-- Lightbox Galería -->
+  <div id="lightbox" class="lightbox-overlay" onclick="cerrarLightbox()">
+    <img id="lightbox-img" src="" alt="Imagen ampliada">
+  </div>
+  
+
+  <!-- Aquí va el footer -->
+  <footer class="footer-main">
+    <p>&copy; 2025 IE Francisco Bolognesi. Todos los derechos reservados.</p>
+    <p>
+      <a href="https://www.facebook.com/profile.php?id=61551563597462" target="_blank">Facebook oficial</a> |
+      <a href="#contacto">Contáctenos</a>
+    </p>
+  </footer>
+
+  <script>
+    // Animación fade-in
+    const fades = document.querySelectorAll('section.fade-in');
+    window.addEventListener('scroll', () => {
+      fades.forEach(sec => {
+        if (sec.getBoundingClientRect().top < window.innerHeight * 0.85) {
+          sec.classList.add('visible');
+        }
+      });
+    });
+    window.dispatchEvent(new Event('scroll'));
+
+    // Mostrar perfil docente
+    function mostrarPerfil(nombre, foto, grado) {
+      document.getElementById('fotoProfesor').src = `static/img/docentes/${foto}`;
+      document.getElementById('nombreProfesor').innerText = nombre;
+      document.getElementById('gradoProfesor').innerText = grado;
+      document.getElementById('perfilModal').style.display = 'flex';
+    }
+    function cerrarModal() {
+      document.getElementById('perfilModal').style.display = 'none';
+    }
+
+    // Testimonios
+    const malas = ['puta','mierda','carajo','fuck','shit','bitch'];
+    const cont = document.getElementById('testimonios');
+    document.getElementById('formTestimonio').addEventListener('submit', e => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value.trim();
+      const correo = document.getElementById('correo').value.trim().toLowerCase();
+      const msg = document.getElementById('mensaje').value.trim();
+      if (nombre.split(' ').length < 2) { return alert('Ingresa al menos dos nombres/apellidos'); }
+      if (!correo.includes(nombre.split(' ')[0].toLowerCase())) { return alert('El correo debe incluir tu nombre'); }
+      if (malas.some(w => msg.toLowerCase().includes(w))) { return alert('Contenido inapropiado filtrado.'); }
+      const div = document.createElement('div');
+      div.className = 'testimonial-item';
+      div.innerHTML = `<p>"${msg}"</p><p class="testimonial-author">— ${nombre}</p>`;
+      cont.prepend(div);
+      e.target.reset();
+    });
+    // Mostrar noticia (versión definitiva unificada)
+    function mostrarNoticia(titulo, fecha, contenido, imagen) {
+      const modal = document.getElementById('modal-noticia');
+      const img = document.getElementById('modal-imagen');
+
+      document.getElementById('modal-titulo').innerText = titulo;
+      document.getElementById('modal-fecha').innerText = fecha;
+      document.getElementById('modal-contenido').innerText = contenido;
+
+      if (imagen) {
+        img.src = imagen;
+        img.style.display = 'block';
+      } else {
+        img.style.display = 'none';
+      }
+
+      modal.style.display = 'block';
+    }
+
+    // Cerrar noticia
+    function cerrarModalNoticia() {
+      document.getElementById('modal-noticia').style.display = 'none';
+    }
+
+  </script>
+</body>
+</html>

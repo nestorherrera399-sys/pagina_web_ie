@@ -1,0 +1,114 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  background-color: #f8f8f8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.nav-links a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.banner-bolognesi {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.banner-bolognesi img {
+  width: 100%;
+  display: block;
+  animation: fadeIn 2s ease forwards;
+}
+
+.animacion-fadein {
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.bienvenida {
+  padding: 40px;
+  text-align: center;
+} 
+
+  .profesores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.profesor-card {
+  background-color: #f9f9f9;
+  border-left: 6px solid #2180A6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: #333;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  border: none;        /* quitar borde de botón por defecto */
+  outline: none;       /* quitar borde azul al hacer clic */
+}
+
+.profesor-card:hover {
+  background-color: #e6f7ff;
+  transform: scale(1.02);
+}
+
+.profesor-card span {
+  display: block;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+#celebracion-container {
+  flex: 1;
+  max-width: 450px;   /* un poco más ancho para imágenes grandes */
+  position: relative;
+  margin-left: 40px;  /* separarlo un poco más hacia la derecha */
+}
+
+.carousel-img {
+  width: 100%;        /* ocupa todo el ancho del contenedor */
+  height: 350px;      /* más alto para imagenes grandes */
+  object-fit: cover;  /* que cubra bien el área sin deformar */
+  border-radius: 8px;
+  display: block;     /* para que no haya espacios inesperados */
+}
+
+section#matricula-virtual {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  display: block !important;
+}
+

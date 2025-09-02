@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registrarse - IE Francisco Bolognesi</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #e8effa, #cfddeb);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .register-container {
+      background-color: white;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      color: #294d7a;
+      margin-bottom: 30px;
+      font-size: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .btn-register {
+      background-color: #294d7a;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-register:hover {
+      background-color: #1f3a5a;
+    }
+
+    .enlace {
+      margin-top: 20px;
+      display: block;
+      color: #294d7a;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .enlace:hover {
+      color: #f0b849;
+    }
+
+    .mensaje {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    /* 🔧 RESPONSIVE MEDIA QUERY */
+    @media (max-width: 480px) {
+      .register-container {
+        padding: 30px 20px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      input,
+      .btn-register {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo IE" class="logo" />
+    <h2>Crear Cuenta</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mensaje">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('register') }}">
+      <input type="text" name="nombres" placeholder="Nombres" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras y espacios">
+      <input type="text" name="apellidos" placeholder="Apellidos" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras y espacios">
+      <input type="text" name="dni" placeholder="DNI" required pattern="\d{8}" maxlength="8" inputmode="numeric" title="DNI debe tener exactamente 8 números">
+      <input type="email" name="correo" placeholder="Correo electrónico" required>
+      <input type="text" name="celular" placeholder="Celular" required pattern="\d{9}" maxlength="9" inputmode="numeric" title="Celular debe tener exactamente 9 números">
+      <input type="password" name="password" placeholder="Contraseña" required>
+      <input type="password" name="confirm_password" placeholder="Confirmar contraseña" required>
+      <button class="btn-register" type="submit">Registrarse</button>
+    </form>
+
+    <a href="{{ url_for('login') }}" class="enlace">¿Ya tienes cuenta? Inicia sesión</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IE Francisco Bolognesi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .header {
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      height: 50px;
+      margin-right: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-right: 30px;
+      justify-content: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: black;
+      font-size: 16px;
+      transition: border-bottom 0.3s ease;
+      white-space: nowrap;
+      padding: 5px;
+    }
+
+    .nav-links span.usuario-nombre {
+      color: #294d7a;
+      font-weight: bold;
+      padding: 5px;
+      align-self: center;
+      white-space: nowrap;
+    }
+
+    .nav-links a.active,
+    .nav-links a:hover {
+      border-bottom: 2px solid red;
+    }
+
+    section {
+      padding: 120px 20px;
+      min-height: 100vh;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 1s ease, transform 1s ease;
+      text-align: center;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #inicio img {
+      width: 100%;
+      height: 100vh;
+      object-fit: cover;
+      position: relative;
+      top: -50px;
+    }
+
+    .tarjetas {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: #002147;
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 24px;
+    }
+
+    .card p {
+      flex-grow: 1;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .btn-vermas {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background: white;
+      color: #002147;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-vermas:hover {
+      background: #8B0000;
+      color: white;
+    }
+
+    /* 📱 RESPONSIVE PARA CELULARES */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 15px;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-right: 0;
+        gap: 5px;
+        width: 100%;
+      }
+
+      .nav-links a,
+      .nav-links span.usuario-nombre {
+        font-size: 14px;
+        padding: 5px 0;
+      }
+
+      .card {
+        width: 90%;
+      }
+
+      #inicio img {
+        height: auto;
+        top: 0;
+        object-fit: contain;
+      }
+    }
+
+    /* Extra pequeño */
+    @media (max-width: 480px) {
+      .card h3 {
+        font-size: 20px;
+      }
+
+      .card p {
+        font-size: 14px;
+      }
+
+      .btn-vermas {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo IE Francisco Bolognesi" class="logo" />
+      <h1 style="color: black; font-size: 24px;">IE Francisco Bolognesi</h1>
+    </div>
+    <nav class="nav-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#quienes-somos">¿Quiénes somos?</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#profesores">Profesores</a>
+      <a href="#calendario">Calendario</a>
+      <a href="#contacto">Contáctenos</a>
+      <a href="#tramites">Trámites</a>
+
+      {% if 'usuario_id' in session %}
+        <span style="margin-left: 10px; font-weight: bold; color: #333;">Bienvenido, {{ session['nombre'] }}</span>
+        <a href="{{ url_for('logout') }}" style="color: red; font-weight: bold;">Cerrar sesión</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" style="color: blue; font-weight: bold;">Iniciar sesión</a>
+        <a href="{{ url_for('register') }}" style="color: green; font-weight: bold;">Registrarse</a>
+      {% endif %}
+      
+    </nav>
+  </header>
+  
+  <section id="inicio" class="visible">
+    <img src="{{ url_for('static', filename='img/banner-bolognesi.png') }}" alt="Trabajo, Honradez y Unidad" />
+  </section>
+
+  <section id="quienes-somos" class="quienes-somos">
+    <h2 class="qs-titulo">¿Quiénes Somos?</h2>
+    <p class="qs-descripcion">
+      Institución educativa pública que cuenta con nivel primaria y secundaria, formando escolares en el centro poblado moqueguano de Miramar, distrito de Ilo, provincia de Ilo.
+    </p>
+
+    <div class="qs-tarjetas">
+      <div class="qs-card">
+        <h3>PRIMARIA</h3>
+        <p>Es la primera etapa de la educación formal que los estudiantes cursan después de la educación inicial. Abarca aproximadamente desde los 6 a los 12 años.</p>
+        <a href="{{ url_for('primaria') }}" class="qs-btn">Ver más</a>
+      </div>
+      <div class="qs-card">
+        <h3>SECUNDARIA</h3>
+        <p>Es la etapa siguiente a la primaria, desde los 12 hasta los 17 años, con una formación más avanzada y preparación para estudios superiores.</p>
+        <a href="{{ url_for('secundaria') }}" class="qs-btn">Ver más</a>
+      </div>
+    </div>
+  </section>
+  <style>
+    .quienes-somos {
+      padding: 100px 20px;
+      background: linear-gradient(to bottom, #f7f9fc, #dee6f0);
+      text-align: center;
+    }
+
+    .qs-titulo {
+      font-size: 3rem;
+      color: #002147;
+      font-weight: bold;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .qs-titulo::after {
+      content: "";
+      display: block;
+      height: 4px;
+      width: 80px;
+      background: #f0b849;
+      margin: 10px auto 30px;
+      border-radius: 5px;
+    }
+
+    .qs-descripcion {
+      font-size: 1.2rem;
+      max-width: 800px;
+      margin: 0 auto 50px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .qs-tarjetas {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .qs-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 30px 25px;
+      width: 300px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .qs-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .qs-card h3 {
+      color: #294d7a;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+
+    .qs-card p {
+      font-size: 1.05rem;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .qs-btn {
+      margin-top: 20px;
+      display: inline-block;
+      background: #294d7a;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .qs-btn:hover {
+      background: #1f3a5a;
+    }
+
+    @media (max-width: 768px) {
+      .qs-titulo {
+        font-size: 2.2rem;
+      }
+      .qs-card {
+        width: 90%;
+      }
+      .qs-descripcion {
+        font-size: 1rem;
+      }
+    }
+  </style>
+
+  <section id="nosotros" class="nosotros-section">
+    <h2 class="section-title">Nosotros</h2>
+    <div class="nosotros-contenido">
+      <div class="nosotros-card">
+        <h3>Misión</h3>
+        <p>Brindar una formación integral de calidad, centrada en valores, pensamiento crítico y compromiso social, desarrollando las capacidades de nuestros estudiantes para que sean agentes de cambio en su comunidad.</p>
+      </div>
+      <div class="nosotros-card">
+        <h3>Visión</h3>
+        <p>Ser una institución educativa líder en innovación pedagógica, inclusión y excelencia académica, que forme ciudadanos responsables, solidarios y preparados para afrontar los retos del mundo actual.</p>
+      </div>
+      <div class="nosotros-card">
+        <h3>Historia</h3>
+        <p>La I.E. Francisco Bolognesi es un referente en la región, con más de cinco décadas formando generaciones con valores, compromiso y excelencia educativa que aportan al desarrollo social y cultural.</p>
+      </div>
+    </div>
+  </section>
+  <style>
+    .nosotros-section {
+      padding: 100px 20px;
+      background: linear-gradient(to bottom, #eaf0fb, #d4e0f0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: 3rem;
+      color: #002147;
+      font-weight: bold;
+      margin-bottom: 60px;
+      position: relative;
+      text-align: center;
+    }
+
+    .section-title::after {
+      content: "";
+      width: 60px;
+      height: 4px;
+      background-color: #f0b849;
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 5px;
+    }
+
+    .nosotros-contenido {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .nosotros-card {
+      background: #ffffff;
+      border-left: 6px solid #f0b849;
+      padding: 40px 30px;
+      border-radius: 10px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .nosotros-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .nosotros-card h3 {
+      font-size: 1.8rem;
+      color: #294d7a;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nosotros-card h3 span {
+      color: #f0b849;
+      font-size: 1.5rem;
+    }
+
+    .nosotros-card p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .section-title {
+        font-size: 2.2rem;
+      }
+
+      .nosotros-card {
+        padding: 25px 20px;
+      }
+
+      .nosotros-card h3 {
+        font-size: 1.4rem;
+      }
+
+      .nosotros-card p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+
+  <section id="profesores" class="content-main" style="padding:100px 0;">
+    <h2 class="section-title" style="font-size:2.5rem; margin-bottom:2rem;">Lista de Profesores</h2>
+
+    <h3>Docentes de Primaria</h3>
+    <div class="profesores-grid">
+      <button class="profesor-card" onclick="mostrarPerfil('Jacqueline Vilca Ascura', 'user.jpg', '2º A')">
+      👤 Jacqueline Vilca Ascura<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Miriam Ninaja Acero', 'user.jpg', '2º B')">
+      👤 Miriam Ninaja Acero<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Claudia Arrospide Carbajal', 'user.jpg', '3º A')">
+      👤 Claudia Arrospide Carbajal<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Verónica Canales Castilla', 'user.jpg', '3º B')">
+      👤 Verónica Canales Castilla<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Teresa Cayetano Yufra', 'user.jpg', '4º A')">
+      👤 Teresa Cayetano Yufra<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Yaham Herrera Rodríguez Herrera', 'user.jpg', '4º B')">
+      👤 Yaham Herrera Rodríguez Herrera<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Mayra Flores Cruz', 'user.jpg', '5º A')">
+      👤 Mayra Flores Cruz<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Macarena Zapana Sosa', 'user.jpg', '5º B')">
+      👤 Macarena Zapana Sosa<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Ana Guillen Choque', 'user.jpg', '6º A')">
+      👤 Ana Guillen Choque<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Rosaria Mamani Díaz', 'user.jpg', '6º B')">
+      👤 Rosaria Mamani Díaz<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Violeta Millones Cusicanqui', 'user.jpg', '5º B')">
+      👤 Violeta Millones Cusicanqui<br><span>Docente Primaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Miguel Lucaña Linares', 'user.jpg', 'Educación Física')">
+      👤 Miguel Lucaña Linares<br><span>Docente Primaria</span>
+    </button>      
+    </div>
+
+    <h3 style="margin-top:2rem;">Docentes de Secundaria</h3>
+    <div class="profesores-grid">
+      <button class="profesor-card" onclick="mostrarPerfil('Leo Acostupa Chura', 'leo.jpg', 'DPCC / Educación para el Trabajo')">
+      👤 Leo Acostupa Chura<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Blanca Berroa Toala', 'blanca.jpg', 'Ciencia y Tecnología')">
+      👤 Blanca Berroa Toala<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Nicolasa Flores Machaca', 'nicolasa.jpg', 'Matemáticas')">
+      👤 Nicolasa Flores Machaca<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Janet Flores Laura', 'janet.jpg', 'Comunicación')">
+      👤 Janet Flores Laura<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Richard Palacios Garibaldi', 'richard.jpg', 'Comunicación')">
+      👤 Richard Palacios Garibaldi<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Juan Carlos Juárez Amézquita', 'juancarlos.jpg', 'Ciencias Sociales')">
+      👤 Juan Carlos Juárez Amézquita<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('María Yullli Ranilla', 'maria.jpg', 'Ciencias Sociales')">
+      👤 María Yullli Ranilla<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Isabel Herrera Rosas', 'isabel.jpg', 'Ciencia y Tecnología')">
+      👤 Isabel Herrera Rosas<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Elvis Santos Ticona', 'elvis.jpg', 'Ciencia y Tecnología')">
+      👤 Elvis Santos Ticona<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Ana Soto Mamani', 'ana.jpg', 'Ciencia y Tecnología')">
+      👤 Ana Soto Mamani<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Lucy Arpasi Limachi', 'lucy.jpg', 'Arte')">
+      👤 Lucy Arpasi Limachi<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Jhon Júpiter Quispe Montoya', 'jhon.jpg', 'Inglés')">
+      👤 Jhon Júpiter Quispe Montoya<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Edward Yufra Coaquira', 'edward.jpg', 'Inglés')">
+      👤 Edward Yufra Coaquira<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Reyna Zea Apaza', 'reyna.jpg', 'Religión')">
+      👤 Reyna Zea Apaza<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Pamela Zegarra Meza', 'pamela_z.jpg', 'Matemáticas')">
+      👤 Pamela Zegarra Meza<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Jorge Torres Garate', 'jorge.jpg', 'Matemáticas')">
+      👤 Jorge Torres Garate<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Carmen Ordoñez Condori', 'carmen.jpg', 'Educación Física')">
+      👤 Carmen Ordoñez Condori<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Teresa Ortiz Hurtado', 'teresa.jpg', 'Educación para el Trabajo')">
+      👤 Teresa Ortiz Hurtado<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Filete Tincos Quispe', 'filete.jpg', 'DPCC')">
+      👤 Filete Tincos Quispe<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Nancy Ticona Quispe', 'nancy.jpg', 'Educación Física')">
+      👤 Nancy Ticona Quispe<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Lupe Mosaja Bejarano', 'lupe.jpg', 'Auxiliar')">
+      👤 Lupe Mosaja Bejarano<br><span>Docente Secundaria</span>
+    </button>
+
+    <button class="profesor-card" onclick="mostrarPerfil('Pamela Moreno Quijandría', 'pamela_m.jpg', 'Auxiliar')">
+      👤 Pamela Moreno Quijandría<br><span>Docente Secundaria</span>
+    </button>      
+    </div>
+
+    <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-contenido {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+    }
+    .modal-cerrar {
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    </style>
+
+    <div id="modalPerfil" class="modal">
+      <div class="modal-contenido">
+        <span class="modal-cerrar" onclick="cerrarPerfil()">&times;</span>
+        <img id="perfilFoto" src="" alt="Foto del Profesor">
+        <h2 id="perfilNombre"></h2>
+        <p><strong>Área / Grado:</strong> <span id="perfilDescripcion"></span></p>
+      </div>
+    </div>
+
+    <script>
+    function mostrarPerfil(nombre, imagen, descripcion) {
+      document.getElementById('perfilNombre').textContent = nombre;
+      document.getElementById('perfilFoto').src = `/static/profesores/${imagen}`;
+      document.getElementById('perfilDescripcion').textContent = descripcion;
+      document.getElementById('modalPerfil').style.display = "block";
+    }
+
+    function cerrarPerfil() {
+      document.getElementById('modalPerfil').style.display = "none";
+    }
+    document.querySelectorAll('.profesor-card').forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
+    });
+    </script>
+  </section>
+
+  <section id="calendario" class="content-main" style="padding:100px 0; display:flex; gap:30px;">
+    <div style="flex:1; margin-top: 50px; margin-left: 50px; max-width: 600px;">
+      <h2 class="section-title" style="font-size:2.5rem; margin-bottom:2rem;">Calendario Escolar 2025</h2>
+
+      <div style="max-width: 800px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <button onclick="changeMonth(-1)">◀</button>
+          <h3 id="calendar-title" style="margin: 0;">Mes Año</h3>
+          <button onclick="changeMonth(1)">▶</button>
+        </div>
+
+        <!-- CALENDARIO -->
+        <div id="calendar-container" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;"></div>
+
+        <!-- LEYENDA DE COLORES -->
+        <div style="margin-top: 30px; text-align: center;">
+          <h4 style="font-size: 1.1rem; margin-bottom: 10px;">Leyenda de Colores:</h4>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 18px; height: 18px; background-color: #fdd; border: 1px solid #aaa; border-radius: 4px;"></div>
+              <span style="font-size: 0.95rem;">Feriado</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 18px; height: 18px; background-color: #e0f7fa; border: 1px solid #aaa; border-radius: 4px;"></div>
+              <span style="font-size: 0.95rem;">Semana de descanso</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 18px; height: 18px; background-color: #e5ccf5; border: 1px solid #aaa; border-radius: 4px;"></div>
+              <span style="font-size: 0.95rem;">Día cívico</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="celebracion-container" style="flex:1; max-width: 700px; position: relative; margin-left: 150px;">
+      <h3 id="celebracion-titulo"></h3>
+      <img id="celebracion-img" src="" alt="" style="max-width:100%; display:none; margin-bottom: 20px;">
+
+      <div id="carousel" style="position: relative;">
+        <img src="{{ url_for('static', filename='img/agua.png') }}" class="carousel-img" style="display: block;">             <!-- 22 de marzo -->
+        <img src="{{ url_for('static', filename='img/libro.jpg') }}" class="carousel-img" style="display: none;">           <!-- 23 de abril -->
+        <img src="{{ url_for('static', filename='img/trabajo.webp') }}" class="carousel-img" style="display: none;">        <!-- 1 de mayo -->
+        <img src="{{ url_for('static', filename='img/madre.jpg') }}" class="carousel-img" style="display: none;">           <!-- 7 de mayo -->
+        <img src="{{ url_for('static', filename='img/ambiente.jpg') }}" class="carousel-img" style="display: none;">        <!-- 2 de junio -->
+        <img src="{{ url_for('static', filename='img/bandera.jpg') }}" class="carousel-img" style="display: none;">         <!-- 7 de junio -->
+        <img src="{{ url_for('static', filename='img/bolo.jpg') }}" class="carousel-img" style="display: none;">            <!-- 8 de junio -->
+        <img src="{{ url_for('static', filename='img/oceano.jpg') }}" class="carousel-img" style="display: none;">          <!-- 18 de junio -->
+        <img src="{{ url_for('static', filename='img/campesino.jpg') }}" class="carousel-img" style="display: none;">       <!-- 24 de junio -->
+        <img src="{{ url_for('static', filename='img/educacion.jpg') }}" class="carousel-img" style="display: none;">       <!-- 6 de julio -->
+        <img src="{{ url_for('static', filename='img/patrias.jpg') }}" class="carousel-img" style="display: none;">         <!-- 28 de julio -->
+        <img src="{{ url_for('static', filename='img/patrias.jpg') }}" class="carousel-img" style="display: none;">         <!-- 29 de julio -->
+        <img src="{{ url_for('static', filename='img/juventud.jpg') }}" class="carousel-img" style="display: none;">        <!-- 23 de setiembre -->
+        <img src="{{ url_for('static', filename='img/combate.jpg') }}" class="carousel-img" style="display: none;">         <!-- 8 de octubre -->
+        <img src="{{ url_for('static', filename='img/manos.jpg') }}" class="carousel-img" style="display: none;">           <!-- 15 de octubre -->
+        <img src="{{ url_for('static', filename='img/alimentacion.jpg') }}" class="carousel-img" style="display: none;">    <!-- 16 de octubre -->
+        <img src="{{ url_for('static', filename='img/derechos.jpg') }}" class="carousel-img" style="display: none;">        <!-- 25 de octubre -->
+        <img src="{{ url_for('static', filename='img/aire.jpg') }}" class="carousel-img" style="display: none;">            <!-- 20 de noviembre -->
+        <img src="{{ url_for('static', filename='img/anemia.png') }}" class="carousel-img" style="display: none;">          <!-- 22 de noviembre -->
+        <img src="{{ url_for('static', filename='img/derechos.jpg') }}" class="carousel-img" style="display: none;">        <!-- 3 de diciembre -->
+        <img src="{{ url_for('static', filename='img/navidad.jpg') }}" class="carousel-img" style="display: none;">         <!-- 25 de diciembre -->
+
+        <button id="prevBtn" style="position: absolute; top: 50%; left: 0; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; cursor: pointer; padding: 8px;">&#10094;</button>
+        <button id="nextBtn" style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; cursor: pointer; padding: 8px;">&#10095;</button>
+      </div>
+      <p id="fecha-carrusel" style="text-align:center; font-weight:bold; margin-top: 15px; font-size: 1.2rem;"></p>
+
+    </div>
+  </section>
+
+  <style>
+    #calendar-container div {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ccc;
+      font-family: Arial, sans-serif;
+      border-radius: 5px;
+      background-color: #fff;
+      font-size: 14px;
+    }
+
+    .day-name {
+      font-weight: bold;
+      background-color: #dee7f0;
+      color: #1a2f50;
+    }
+
+    .holiday {
+      background-color: #ffe5e5;
+      color: #b00020;
+      font-weight: bold;
+    }
+
+    .rest-week {
+      background-color: #e0f7fa;
+      font-style: italic;
+      color: #006064;
+    }
+
+    .civic-day {
+      background-color: #ede7f6;
+      color: #4a148c;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .civic-day:hover {
+      transform: scale(1.05);
+    }
+
+    .carousel-img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .carousel-img.active {
+      display: block;
+    }
+
+    #calendar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    #calendar .section-title {
+      color: #002147;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    #calendar-container {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    #calendar-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1f3a5a;
+    }
+
+    button {
+      font-size: 16px;
+      background-color: #294d7a;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1a2e4e;
+    }
+
+    #celebracion-container {
+      margin-top: 50px;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    #celebracion-titulo {
+      font-size: 1.5rem;
+      color: #294d7a;
+      margin-bottom: 15px;
+    }
+
+    #carousel {
+      position: relative;
+    }
+
+    #prevBtn, #nextBtn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      font-size: 18px;
+      z-index: 1;
+    }
+
+    #prevBtn { left: 0; }
+    #nextBtn { right: 0; }
+
+    section {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 1s ease, transform 1s ease;
+      will-change: opacity, transform;
+      padding: 100px 20px;
+      box-sizing: border-box;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Layout de sección calendario + carrusel */
+    #calendario.content-main {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 60px;
+      flex-wrap: wrap;
+      padding: 100px 30px;
+      background: linear-gradient(to bottom, #f7faff, #e4ecf5);
+    }
+
+    @media (max-width: 1024px) {
+      #calendario.content-main {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #calendar-container {
+        max-width: 100%;
+        grid-template-columns: repeat(7, 1fr);
+      }
+
+      #celebracion-container {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      #calendar-title {
+        font-size: 1.2rem;
+      }
+
+      .carousel-img {
+        height: 250px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
+
+      #prevBtn, #nextBtn {
+        padding: 6px;
+      }
+    }
+  </style>
+
+  <script>
+    const dayNames = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+    const holidays = ["2025-01-01", "2025-04-18", "2025-05-01", "2025-06-29", "2025-07-28", "2025-07-29", "2025-08-30", "2025-10-08", "2025-11-01", "2025-12-08", "2025-12-25"];
+    const restWeeks = [
+      { start: "2025-07-15", end: "2025-07-19" },
+      { start: "2025-10-07", end: "2025-10-11" }
+    ];
+    const civicEvents = [
+    { date: "2025-03-22", name: "Día Mundial del Agua" },
+    { date: "2025-04-23", name: "Día del Libro" },
+    { date: "2025-05-01", name: "Día del Trabajo" },
+    { date: "2025-05-07", name: "Día de la Madre" },
+    { date: "2025-06-02", name: "Día del Medio Ambiente Escolar" },
+    { date: "2025-06-07", name: "Día de la Bandera" },
+    { date: "2025-06-08", name: "Nacimiento de Bolognesi" },
+    { date: "2025-06-18", name: "Día Mundial del Océano" },
+    { date: "2025-06-24", name: "Día del Campesino" },
+    { date: "2025-07-06", name: "Día del Maestro" },
+    { date: "2025-07-28", name: "Fiestas Patrias (1º Día)" },
+    { date: "2025-07-29", name: "Fiestas Patrias (2º Día)" },
+    { date: "2025-09-23", name: "Día de la Juventud" },
+    { date: "2025-10-08", name: "Combate de Angamos" },
+    { date: "2025-10-15", name: "Día Mundial del Lavado de Manos" },
+    { date: "2025-10-16", name: "Día Mundial de la Alimentación" },
+    { date: "2025-10-25", name: "Día de la Persona con Discapacidad" },
+    { date: "2025-11-20", name: "Día de los Derechos del Niño" },
+    { date: "2025-11-22", name: "Día contra la Anemia" },
+    { date: "2025-12-03", name: "Día de las Personas con Discapacidad" },
+    { date: "2025-12-25", name: "Navidad" }
+    ];
+
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    const calendarTitle = document.getElementById("calendar-title");
+    const container = document.getElementById("calendar-container");
+
+    const formatDate = date => date.toISOString().split("T")[0];
+
+    function renderCalendar(year, month) {
+      container.innerHTML = "";
+
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
+      calendarTitle.textContent = `${monthNames[month]} ${year}`;
+
+      dayNames.forEach(day => {
+        const div = document.createElement("div");
+        div.className = "day-name";
+        div.textContent = day;
+        container.appendChild(div);
+      });
+
+      const firstDay = new Date(year, month, 1);
+      const startDay = (firstDay.getDay() + 6) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < startDay; i++) {
+        container.appendChild(document.createElement("div"));
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement("div");
+        const currentDate = formatDate(new Date(year, month, d));
+
+        if (holidays.includes(currentDate)) {
+          cell.className = "holiday";
+        } else if (restWeeks.some(r => currentDate >= r.start && currentDate <= r.end)) {
+          cell.className = "rest-week";
+        } else if (civicEvents.some(ev => ev.date === currentDate)) {
+          cell.className = "civic-day";
+
+           cell.addEventListener("click", () => {
+            const index = civicEvents.findIndex(ev => ev.date === currentDate);
+            if (index !== -1) {
+              currentSlide = index;
+              showSlide(currentSlide);
+            }
+          });
+        }
+
+        cell.textContent = d;
+        container.appendChild(cell);
+      }
+    }
+
+    function changeMonth(offset) {
+      currentMonth += offset;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      } else if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentYear, currentMonth);
+    }
+
+    renderCalendar(currentYear, currentMonth);
+
+    // Carrusel
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-img');
+    const totalSlides = slides.length;
+   
+    function showSlide(index) {
+      slides.forEach((img, i) => {
+        img.style.display = i === index ? 'block' : 'none';
+      });
+
+      // Mostrar fecha y descripción
+      const evento = civicEvents[index];
+      if (evento) {
+        const fecha = new Date(evento.date);
+        const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+        const fechaTexto = fecha.toLocaleDateString('es-ES', opciones);
+        document.getElementById("fecha-carrusel").textContent = `${fechaTexto} – ${evento.name}`;
+      } else {
+        document.getElementById("fecha-carrusel").textContent = "";
+      }
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      showSlide(currentSlide);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      showSlide(currentSlide);
+    });
+
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      showSlide(currentSlide);
+    }, 5000);
+
+    showSlide(currentSlide);
+
+    // Intersection Observer para animar secciones al entrar en viewport
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    });
+
+    document.querySelectorAll('section').forEach(section => {
+      observer.observe(section);
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+      }
+    });
+  </script> 
+
+  <section id="contacto" class="content-main" style="padding: 120px 20px 150px; background-color: #f4f9fc;">
+    <div class="contact-wrapper">
+      <!-- Mapa con altura igual a la tarjeta de contacto -->
+      <div class="map-container">
+        <iframe
+          src="https://www.google.com/maps?q=I.E.+Francisco+Bolognesi+Cervantes,+Pedro+Ruiz+Gallo,+Ilo+18601&output=embed"
+          width="100%"
+          height="100%"
+          style="border:0; border-radius: 12px;"
+          allowfullscreen=""
+          loading="lazy">
+        </iframe>
+      </div>
+
+      <!-- Información de contacto -->
+      <div class="info-container">
+        <div class="contact-box">
+          <h2 class="contact-title">Contáctenos</h2>
+          <p class="contact-desc">
+            Para realizar consultas se puede llamar al número que se muestra o acercarse a la dirección que se indica:
+          </p>
+          <ul class="contact-list">
+            <li><strong>Número Telefónico:</strong> 053 621453</li>
+            <li><strong>Dirección:</strong> I.E. Francisco Bolognesi Cervantes, Pedro Ruiz Gallo, Ilo 18601</li>
+            <li><strong>Correo Electrónico:</strong>
+              <a href="mailto:iefranciscobolognesicervantes@gmail.com">iefranciscobolognesicervantes@gmail.com</a>
+            </li>
+            <li><strong>Facebook:</strong>
+              <a href="https://www.facebook.com/profile.php?id=61551563597462" target="_blank">Visitar Facebook</a>
+            </li>
+            <li><strong>Horario de Atención:</strong> 8:00 am a 3:00 pm / Lunes a Viernes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .contact-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: stretch;
+        gap: 50px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .map-container {
+        flex: 1 1 500px;
+        min-width: 300px;
+        max-width: 500px;
+        height: auto;
+      }
+
+      .map-container iframe {
+        width: 100%;
+        height: 100%;
+        min-height: 460px;
+        border-radius: 12px;
+      }
+
+      .info-container {
+        flex: 1 1 500px;
+        min-width: 320px;
+      }
+
+      .contact-box {
+        background: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        height: 100%;
+      }
+
+      .contact-title {
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+        font-family: 'Segoe UI', sans-serif;
+        color: #294d7a;
+        text-align: center;
+      }
+
+      .contact-desc {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+        color: #333;
+        line-height: 1.6;
+        text-align: justify;
+      }
+
+      .contact-list {
+        list-style: none;
+        padding: 0;
+        font-size: 1.1rem;
+        color: #444;
+      }
+
+      .contact-list li {
+        margin-bottom: 12px;
+      }
+
+      .contact-list a {
+        color: #2180A6;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .contact-list a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .contact-wrapper {
+          flex-direction: column;
+        }
+
+        .map-container iframe {
+          min-height: 300px;
+        }
+
+        .contact-box {
+          padding: 30px 20px;
+        }
+      }
+
+      section#contacto {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        display: block !important;
+      }
+    </style>
+  </section>
+  
+  {% if session.get('rol') in ['padre', 'admin', 'editor', 'moderador'] %}
+  <section id="tramites" class="content-main" style="padding: 80px 20px; background-color: #fff;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 40px;">Trámites (FUT)</h2>
+      <p style="font-size: 1.1rem; text-align: center; margin-bottom: 40px;">
+        A continuación se muestra un listado de los trámites que puede realizar en la institución. 
+        Si desea ver un ejemplo, haga clic en las imágenes. Si desea descargar el FUT, use el botón "Descargar FUT".
+      </p>
+
+      <div class="tramites-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+
+        <!-- Trámite 1 -->
+        <div class="tramite-card" style="background: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; text-align: center;">
+          <iframe src="{{ url_for('static', filename='docs/Certificado_de_Estudios.pdf') }}" width="100%" height="300px" style="border: 1px solid #ccc; border-radius: 4px;"></iframe>
+          <h3 style="margin-top: 20px;">Certificado de Estudios</h3>
+          <p>Documento que valida la finalización exitosa de un programa educativo.</p>
+          <a href="{{ url_for('static', filename='docs/Certificado_de_Estudios.pdf') }}" download class="btn-descargar">Descargar FUT</a>
+        </div>
+
+        <!-- Trámite 2 -->
+        <div class="tramite-card" style="background: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; text-align: center;">
+          <iframe src="{{ url_for('static', filename='docs/Certificado_de_Estudios.pdf') }}" width="100%" height="300px" style="border: 1px solid #ccc; border-radius: 4px;"></iframe>
+          <h3 style="margin-top: 20px;">Solicitud de Permiso</h3>
+          <p>Autorización para realizar actividades o acceder a recursos específicos.</p>
+          <a href="{{ url_for('static', filename='docs/Certificado_de_Estudios.pdf') }}" download class="btn-descargar">Descargar FUT</a>
+        </div>
+
+        <!-- Trámite 3 -->
+        <div class="tramite-card" style="background: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; text-align: center;">
+          <iframe src="{{ url_for('static', filename='docs/Certificado_de_Estudios.pdf') }}" width="100%" height="300px" style="border: 1px solid #ccc; border-radius: 4px;"></iframe>
+          <h3 style="margin-top: 20px;">Solicitud Vacante de Primaria</h3>
+          <p>Peticiones para inscribir a un estudiante en primaria.</p>
+          <a href="{{ url_for('static', filename='docs/Certificado_de_Estudios.pdf') }}" download class="btn-descargar">Descargar FUT</a>
+        </div>
+
+        <!-- Trámite 4 -->
+        <div class="tramite-card" style="background: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; text-align: center;">
+          <iframe src="{{ url_for('static', filename='docs/Certificado_de_Estudios.pdf') }}" width="100%" height="300px" style="border: 1px solid #ccc; border-radius: 4px;"></iframe>
+          <h3 style="margin-top: 20px;">Trámite de Traslado</h3>
+          <p>Solicitud para cambiar de escuela o institución.</p>
+          <a href="{{ url_for('static', filename='docs/Certificado_de_Estudios.pdf') }}" download class="btn-descargar">Descargar FUT</a>
+        </div>
+
+      </div>
+    </div>
+
+    
+
+    <script>
+      function openModal(pdfUrl, title) {
+        document.getElementById("modalPDF").src = pdfUrl;
+        document.getElementById("modalTitle").innerText = title;
+        document.getElementById("pdfModal").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("pdfModal").style.display = "none";
+        document.getElementById("modalPDF").src = "";
+      }
+    </script>
+          
+
+    <style>
+      .btn-descargar {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: #002147;
+        color: white;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background 0.3s;
+      }
+      .btn-descargar:hover {
+        background: #8B0000;
+      }
+      /* Evita invisibilidad por errores previos */
+      section#tramites {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        display: block !important;
+      }
+        @media (max-width: 1024px) {
+        .tramites-grid {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+        }
+
+        .tramite-card iframe {
+          height: 250px;
+        }
+
+        .tramite-card h3 {
+          font-size: 1.2rem;
+        }
+
+        .tramite-card p {
+          font-size: 1rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .tramites-grid {
+          grid-template-columns: 1fr;
+          padding: 0 10px;
+        }
+
+        .tramite-card {
+          padding: 15px;
+        }
+
+        .tramite-card iframe {
+          height: 220px;
+        }
+
+        .tramite-card h3 {
+          font-size: 1.1rem;
+        }
+
+        .tramite-card p {
+          font-size: 0.95rem;
+        }
+
+        .btn-descargar {
+          font-size: 0.95rem;
+          padding: 8px 16px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .tramites-grid {
+          gap: 15px;
+        }
+
+        .tramite-card iframe {
+          height: 200px;
+        }
+
+        .tramite-card h3 {
+          font-size: 1rem;
+        }
+
+        .tramite-card p {
+          font-size: 0.9rem;
+        }
+
+        .btn-descargar {
+          font-size: 0.9rem;
+        }
+      }
+
+    </style>
+
+    <script>
+      function openModal(src, title) {
+        document.getElementById('modalImg').src = src;
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('tramiteModal').style.display = 'flex';
+      }
+      function closeModal() {
+        document.getElementById('tramiteModal').style.display = 'none';
+      }
+    </script>
+  </section> 
+
+  <!-- Formulario virtual de matrícula -->
+  <section id="matricula-virtual" style="margin-top: 60px; background: #f0f4f8; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 800px; margin-left: auto; margin-right: auto;">
+    <h2 style="text-align: center; font-size: 2rem; color: #002147; margin-bottom: 25px;">Matrícula Virtual</h2>
+    <p style="text-align: center; font-size: 1.1rem; color: #333; margin-bottom: 30px;">
+      Completa el siguiente formulario para matricular a tu hijo/a en nuestra institución. Nos pondremos en contacto contigo para confirmar la inscripción.
+    </p>
+
+    <!-- Mostrar mensajes de Flask -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div>
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+    <form id="formMatricula" method="POST" action="/matricula" style="display: grid; gap: 15px;" novalidate>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <input type="text" id="nombreAlumno" name="nombreAlumno" placeholder="Nombre completo del estudiante *" style="flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+        <input type="number" id="edadAlumno" name="edadAlumno" placeholder="Edad *" min="3" max="18" style="width: 120px; padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+      </div>
+
+      <input type="text" id="dniAlumno" name="dniAlumno" placeholder="DNI del estudiante *" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+
+      <input type="text" id="grado" name="grado" placeholder="Grado al que se inscribe *" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+
+      <input type="text" id="colegioAnterior" name="colegioAnterior" placeholder="Colegio de procedencia (si aplica)" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;">
+
+      <input type="text" id="nombrePadre" name="nombrePadre" placeholder="Nombre del padre o tutor *" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+
+      <input type="text" id="dniPadre" name="dniPadre" placeholder="DNI del padre o tutor *" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+
+      <input type="text" id="direccion" name="direccion" placeholder="Dirección completa *" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+
+      <input type="tel" id="telefono" name="telefono" placeholder="Teléfono de contacto *" pattern="[0-9]{9,15}" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+
+      <input type="email" id="email" name="email" placeholder="Correo electrónico *" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+
+      <select id="estadoSalud" name="estadoSalud" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+        <option value="">¿El estudiante tiene alguna condición de salud?</option>
+        <option value="no">No</option>
+        <option value="si">Sí (describir en observaciones)</option>
+      </select>
+
+      <select id="vacunado" name="vacunado" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;" required>
+        <option value="">¿Cuenta con esquema de vacunación completo?</option>
+        <option value="si">Sí</option>
+        <option value="no">No</option>
+      </select>
+
+      <textarea id="observaciones" name="observaciones" rows="4" placeholder="Observaciones adicionales (alergias, salud, comentarios, etc.)" style="padding: 12px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+
+      <button type="submit" style="background-color: #002147; color: white; padding: 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background-color 0.3s;">
+        Enviar Matrícula
+      </button>
+    </form>
+    <style>
+      #matricula-virtual form input,
+      #matricula-virtual form select,
+      #matricula-virtual form textarea {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      #matricula-virtual form button {
+        width: 100%;
+      }
+
+      @media (max-width: 1024px) {
+        #matricula-virtual {
+          padding: 40px 25px;
+        }
+
+        #matricula-virtual h2 {
+          font-size: 1.8rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        #matricula-virtual form {
+          gap: 12px;
+        }
+
+        #matricula-virtual h2 {
+          font-size: 1.6rem;
+        }
+
+        #matricula-virtual p {
+          font-size: 1rem;
+        }
+
+        #matricula-virtual form div {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        #matricula-virtual input[type="number"] {
+          width: 100% !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        #matricula-virtual {
+          padding: 30px 15px;
+        }
+
+        #matricula-virtual h2 {
+          font-size: 1.5rem;
+        }
+
+        #matricula-virtual p {
+          font-size: 0.95rem;
+        }
+
+        #matricula-virtual form button {
+          font-size: 1rem;
+          padding: 12px;
+        }
+      }
+    </style>
+
+  </section>
+  {% endif %}
+
+  
+  <!-- Chatbot HTML -->
+  <div id="chatbot-container">
+    <div id="chatbot-header">Chat 📚</div>
+    <div id="chatbot-body"></div>
+    <div id="chatbot-input-container">
+      <input id="chatbot-input" type="text" placeholder="Escribe tu pregunta y presiona Enter…" autocomplete="off" />
+      <button id="chatbot-send-btn">Enviar</button>
+    </div>
+  </div>
+
+  <!-- Chatbot CSS -->
+  <style>
+      #chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      max-height: 450px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    #chatbot-header {
+      background: #007bff;
+      color: #fff;
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+      user-select: none;
+    }
+
+    #chatbot-body {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: #bbb transparent;
+    }
+
+    #chatbot-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #chatbot-body::-webkit-scrollbar-thumb {
+      background-color: #bbb;
+      border-radius: 3px;
+    }
+
+    .user-message,
+    .bot-message {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 14px;
+      line-height: 1.3;
+      word-wrap: break-word;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #6ab7ff, #1e88e5);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background: #e0e0e0;
+      color: #333;
+      border-bottom-left-radius: 4px;
+    }
+
+    #chatbot-input-container {
+      display: flex;
+      border-top: 1px solid #ddd;
+      background: #fff;
+    }
+
+    #chatbot-input {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      font-size: 15px;
+      outline: none;
+      border-radius: 0 0 0 12px;
+    }
+
+    #chatbot-send-btn {
+      background-color: #007bff;
+      border: none;
+      color: white;
+      padding: 0 18px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 0 0 12px 0;
+      transition: background-color 0.3s ease;
+    }
+
+    #chatbot-send-btn:hover {
+      background-color: #0056b3;
+    }
+      
+  </style>
+
+  <!-- Fuse.js (asegúrate de tener esto en tu HTML) -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+
+  <!-- Chatbot JS -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const chatbotBody = document.getElementById("chatbot-body");
+    const chatbotInput = document.getElementById("chatbot-input");
+    const sendBtn = document.getElementById("chatbot-send-btn");
+
+    const respuestas = [
+      { pregunta: "hola", respuesta: "Hola, ¿en qué te puedo ayudar el día de hoy?" },
+      { pregunta: "francisco bolognesi", respuesta: "Francisco Bolognesi fue un héroe nacional peruano, conocido por su valentía y sacrificio en la defensa del país durante la Guerra del Pacífico." },
+      { pregunta: "por qué se llama francisco bolognesi", respuesta: "El colegio lleva el nombre de Francisco Bolognesi en honor a su legado y valentía como símbolo de patriotismo para inspirar a los estudiantes." },
+      { pregunta: "quién creó esta página", respuesta: "Esta página fue creada por el alumno de Senati: Nestor Herrera Zevallos." },
+      { pregunta: "quién fue el creador", respuesta: "El creador fue el alumno de Senati: Nestor Herrera Zevallos." },
+      { pregunta: "qué es esta página", respuesta: "Esta es la página oficial de la IE Francisco Bolognesi, donde encontrarás información sobre la institución, servicios, noticias, testimonios y más." },
+
+      { pregunta: "historia del colegio", respuesta: "La IE Francisco Bolognesi fue fundada para brindar educación integral a la comunidad, destacándose por su compromiso con la formación académica y valores cívicos." },
+      { pregunta: "misión", respuesta: "Nuestra misión es formar estudiantes íntegros, críticos y comprometidos con la sociedad, capaces de enfrentar los retos del mundo con valores y conocimientos sólidos." },
+      { pregunta: "visión", respuesta: "Nuestra visión es ser una institución educativa líder en la región, reconocida por su excelencia académica, innovación pedagógica y formación en valores." },
+      { pregunta: "valores", respuesta: "Promovemos valores como la honestidad, respeto, responsabilidad, solidaridad y compromiso social, que son la base de nuestra comunidad educativa." },
+
+      { pregunta: "qué hace el área de psicología", respuesta: "Ofrece apoyo emocional, asesoramiento psicológico, prevención de bullying, charlas, talleres y acompañamiento a estudiantes." },
+      { pregunta: "puedo hablar con el psicólogo", respuesta: "Sí, puedes acercarte a la Oficina de Psicología en el horario de atención o comunicarte con un docente para solicitar ayuda." },
+      { pregunta: "dónde está la oficina de psicología", respuesta: "Está ubicada junto a la Dirección de la institución." },
+      { pregunta: "qué hacer si me siento estresado", respuesta: "Puedes acudir al área de Psicología donde te brindarán orientación y estrategias para manejar el estrés." },
+      { pregunta: "qué hacer si un amigo está triste", respuesta: "Escúchalo con empatía y sugiérele que hable con el psicólogo escolar para recibir apoyo profesional." },
+      { pregunta: "hay talleres emocionales", respuesta: "Sí, se ofrecen talleres sobre habilidades socioemocionales, prevención del bullying y desarrollo personal." },
+      { pregunta: "qué hacer ante el bullying", respuesta: "Debes informarlo a un docente o al área de psicología. No estás solo, podemos ayudarte." },
+      { pregunta: "puedo hablar de mis problemas familiares", respuesta: "Sí, el área de Psicología está para escucharte y orientarte con total confidencialidad." },
+      { pregunta: "pueden ayudarme si tengo ansiedad", respuesta: "Sí, se brindan sesiones y estrategias para el manejo de la ansiedad escolar y personal." },
+      { pregunta: "hay apoyo para los padres", respuesta: "Sí, ofrecemos guías, talleres y orientación personalizada para las familias." },
+
+      { pregunta: "cuáles son los mejores libros para aprender", respuesta: "Te recomendamos libros como 'El Principito', 'Cuentos de valores', 'Enciclopedia Escolar' y libros de lectura sugeridos por el docente." },
+      { pregunta: "dónde puedo encontrar cuentos", respuesta: "Puedes revisar nuestra sección de biblioteca o consultar con tu profesor de comunicación." },
+      { pregunta: "qué cuentos recomiendas", respuesta: "Cuentos como 'Los zapatos del abuelo', 'La vaca', y 'El árbol generoso' son excelentes para reflexionar y aprender valores." },
+      { pregunta: "hay biblioteca en el colegio", respuesta: "Sí, contamos con una biblioteca equipada para todos los niveles educativos." },
+      { pregunta: "puedo llevar libros a casa", respuesta: "Sí, puedes solicitar el préstamo con tu carnet escolar, según las normas de la biblioteca." },
+      { pregunta: "hay libros de ayuda emocional", respuesta: "Sí, contamos con material sobre autoestima, resolución de conflictos y habilidades sociales." },
+      { pregunta: "puedo leer en el recreo", respuesta: "Sí, la biblioteca está disponible en ciertos horarios también durante los recreos." },
+      { pregunta: "recomiendas leer cuentos para dormir", respuesta: "Sí, leer cuentos antes de dormir ayuda a desarrollar la imaginación y mejorar el descanso." },
+      { pregunta: "cómo me ayuda leer cuentos", respuesta: "Leer cuentos mejora tu comprensión, creatividad, vocabulario y desarrollo emocional." },
+      { pregunta: "puedo escribir mi propio cuento", respuesta: "¡Claro! Incluso puedes compartirlo con tus docentes o publicarlo en la cartelera escolar." },
+
+      { pregunta: "qué días importantes celebramos", respuesta: "Celebramos fechas como el Día del Logro, Día del Maestro, Aniversario del colegio, Fiestas Patrias, entre otros." },
+      { pregunta: "cuándo es el día del logro", respuesta: "El Día del Logro se realiza dos veces al año para mostrar los avances académicos de los estudiantes." },
+      { pregunta: "qué actividades hacen en fiestas patrias", respuesta: "Desfiles, concursos de danzas, exposiciones culturales y presentaciones artísticas." },
+      { pregunta: "hay concursos de arte o danza", respuesta: "Sí, durante el año organizamos concursos de arte, danza, canto y talentos escolares." },
+      { pregunta: "cómo participo en actividades culturales", respuesta: "Puedes inscribirte a través de tus docentes o en la coordinación del área cultural." },
+      { pregunta: "hay talleres multimedia", respuesta: "Sí, el área de multimedia apoya en la producción de material audiovisual para los eventos escolares." },
+      { pregunta: "quién organiza las actividades", respuesta: "Las actividades son organizadas por los docentes junto con el equipo directivo y apoyo estudiantil." },
+      { pregunta: "puedo presentar un video o proyecto", respuesta: "Sí, puedes coordinar con tus docentes para presentar materiales en fechas importantes." },
+      { pregunta: "cómo me entero de los eventos", respuesta: "Revisando la sección 'Noticias' en la web o preguntando a tus docentes." },
+      { pregunta: "hay feria escolar", respuesta: "Sí, organizamos ferias escolares donde los estudiantes presentan proyectos de ciencia, arte y más." },
+
+      { pregunta: "cómo me inscribo", respuesta: "Puedes inscribirte desde la sección 'Inscripción' presentando los requisitos como DNI, certificado de estudios, y partida de nacimiento." },
+      { pregunta: "qué documentos necesito para inscribirme", respuesta: "DNI del estudiante, partida de nacimiento, libreta anterior y llenar el formulario en línea." },
+      { pregunta: "hay vacantes disponibles", respuesta: "Sí, pero están sujetas a disponibilidad. Revisa la sección 'Admisión'." },
+      { pregunta: "dónde están ubicados", respuesta: "Estamos ubicados en la ciudad de Ilo, puedes ver la dirección exacta en la sección 'Contacto'." },
+      { pregunta: "cuál es el correo de contacto", respuesta: "Puedes escribirnos al correo contacto@iefbolognesi.edu.pe" },
+      { pregunta: "hay número de teléfono", respuesta: "Sí, puedes llamarnos al (01) 234-5678 para más información." },
+      { pregunta: "qué servicios ofrecen", respuesta: "Educación básica, orientación psicológica, biblioteca, talleres y acompañamiento a los estudiantes." },
+      { pregunta: "puedo recibir apoyo escolar", respuesta: "Sí, contamos con asesoría y refuerzo en diversas materias según lo requiera el estudiante." },
+      { pregunta: "tienen redes sociales", respuesta: "Sí, estamos en Facebook: https://www.facebook.com/profile.php?id=61551563597462" },
+      { pregunta: "dónde veo las noticias", respuesta: "Revisa la sección 'Noticias' donde actualizamos eventos y avisos importantes." },
+
+      { pregunta: "necesito ayuda", respuesta: "¡Estoy aquí para ayudarte! Pregunta lo que necesites sobre la IE Francisco Bolognesi." },
+      { pregunta: "eres un asistente", respuesta: "Sí, soy un asistente virtual diseñado para responder tus preguntas sobre la institución." },
+      { pregunta: "en qué puedes ayudarme", respuesta: "Puedo ayudarte con información sobre inscripción, eventos, servicios, contacto, psicología y más." },
+      { pregunta: "puedo confiar en ti", respuesta: "Sí, mi información está basada en el contenido oficial de la institución educativa." },
+      { pregunta: "me puedes recomendar algo", respuesta: "Claro, dime si buscas recomendaciones de libros, actividades o cómo resolver alguna duda escolar." },
+      { pregunta: "qué secciones hay en la web", respuesta: "Tenemos Nosotros, Escolaridad, Recursos, Noticias, Testimonios, Trámites y Admisión." },
+      { pregunta: "qué es la sección escolaridad", respuesta: "Allí encontrarás información sobre los niveles educativos, docentes y áreas académicas." },
+      { pregunta: "qué es la sección recursos", respuesta: "Reúne documentos y materiales útiles como guías, prevención del bullying, manejo del estrés y más." },
+      { pregunta: "qué es la sección testimonios", respuesta: "Es un espacio para que estudiantes y padres compartan sus experiencias con la institución." },
+      { pregunta: "quién responde este chat", respuesta: "Soy un asistente automático basado en JavaScript programado para ayudarte con todo lo que necesites sobre el colegio." },
+
+      { pregunta: "qué es java", respuesta: "Java es un lenguaje de programación ampliamente usado para desarrollar aplicaciones, desde móviles hasta sistemas empresariales." },
+      { pregunta: "que es java", respuesta: "Java es un lenguaje de programación ampliamente usado para desarrollar aplicaciones, desde móviles hasta sistemas empresariales." },
+      { pregunta: "java", respuesta: "Java es un lenguaje de programación popular y robusto, utilizado tanto en la web como en aplicaciones móviles." },
+      { pregunta: "qué es programación", respuesta: "La programación es el proceso de crear instrucciones para que un computador realice tareas específicas, usando lenguajes como Java, Python o JavaScript." },
+      { pregunta: "qué es senati", respuesta: "Senati es una institución educativa técnica peruana que ofrece formación profesional en diversas áreas tecnológicas e industriales." },
+      { pregunta: "quién es nestor herrera zevallos", respuesta: "Es el alumno de Senati que creó y desarrolló esta página web como parte de su formación profesional en Ingeniería de Software con Inteligencia Artificial." },
+      { pregunta: "qué es inteligencia artificial", respuesta: "La inteligencia artificial es una rama de la informática que crea sistemas capaces de realizar tareas que normalmente requieren inteligencia humana, como aprender, razonar o resolver problemas." },
+
+      // Preguntas sobre horarios y clases
+      { pregunta: "a qué hora empiezan las clases", respuesta: "Las clases comienzan a las 7:30 a.m. y terminan a las 3:30 p.m." },
+      { pregunta: "cuánto dura cada clase", respuesta: "Cada clase tiene una duración aproximada de 45 minutos." },
+      { pregunta: "cuáles son los días de clases", respuesta: "Las clases son de lunes a viernes, excepto feriados nacionales." },
+      { pregunta: "hay clases los sábados", respuesta: "No, los sábados no hay clases regulares." },
+      { pregunta: "cómo puedo recuperar clases", respuesta: "Puedes acercarte al área académica para solicitar apoyo y clases de recuperación." },
+
+      // Personal docente y administrativo
+      { pregunta: "quién es el director", respuesta: "El director de la institución es el Lic. Juan Pérez." },
+      { pregunta: "cómo contacto a un docente", respuesta: "Puedes comunicarte vía correo institucional o a través de la secretaria del colegio." },
+      { pregunta: "quién es el docente de matemáticas", respuesta: "La profesora María Gómez es la encargada del área de matemáticas." },
+      { pregunta: "hay psicólogo escolar", respuesta: "Sí, contamos con un psicólogo escolar para apoyar a los estudiantes." },
+
+      // Servicios de apoyo
+      { pregunta: "hay comedor escolar", respuesta: "Sí, ofrecemos servicio de comedor para estudiantes y personal." },
+      { pregunta: "cómo solicito beca", respuesta: "Puedes solicitar beca acercándote a la oficina de administración con tus documentos." },
+      { pregunta: "qué tipo de becas hay", respuesta: "Ofrecemos becas por mérito académico y necesidad económica." },
+      { pregunta: "hay transporte escolar", respuesta: "Actualmente no ofrecemos transporte escolar." },
+
+      // Áreas y actividades extracurriculares
+      { pregunta: "qué talleres extracurriculares hay", respuesta: "Ofrecemos talleres de danza, música, fútbol, robótica y dibujo." },
+      { pregunta: "cómo inscribirme a un taller", respuesta: "Consulta con el coordinador de talleres o revisa la sección de actividades en la web." },
+      { pregunta: "hay equipo de fútbol", respuesta: "Sí, tenemos un equipo de fútbol escolar que participa en campeonatos locales." },
+      { pregunta: "cómo participar en la banda escolar", respuesta: "Puedes acercarte al área de música para inscribirte en la banda." },
+
+      // Infraestructura
+      { pregunta: "cuántos pisos tiene el colegio", respuesta: "El colegio tiene tres pisos equipados con aulas, laboratorios y oficinas." },
+      { pregunta: "hay laboratorio de computación", respuesta: "Sí, contamos con un moderno laboratorio de computación con acceso a internet." },
+      { pregunta: "cómo accedo a la biblioteca", respuesta: "La biblioteca está abierta en horario escolar y puedes solicitar préstamos con tu carnet." },
+      { pregunta: "hay wifi en el colegio", respuesta: "Sí, ofrecemos acceso a wifi para estudiantes y docentes." },
+
+      // Tecnología y recursos digitales
+      { pregunta: "cómo accedo al portal del estudiante", respuesta: "Puedes ingresar con tu usuario y contraseña en la sección 'Estudiantes' de la web." },
+      { pregunta: "qué hago si olvido mi contraseña", respuesta: "Solicita el restablecimiento de contraseña en la oficina de tecnología o vía correo." },
+      { pregunta: "hay plataforma virtual para clases", respuesta: "Sí, utilizamos Google Classroom para las clases virtuales y seguimiento." },
+      { pregunta: "cómo uso Google Classroom", respuesta: "Recibe tu código de aula de tu profesor y accede en https://classroom.google.com." },
+
+      // Evaluaciones y exámenes
+      { pregunta: "cuándo son los exámenes", respuesta: "Los exámenes se realizan al final de cada bimestre académico." },
+      { pregunta: "cómo me preparo para los exámenes", respuesta: "Revisa tus guías, participa en talleres y pide apoyo a tus docentes." },
+      { pregunta: "qué pasa si repruebo", respuesta: "Puedes rendir exámenes de recuperación o tomar cursos de reforzamiento." },
+      { pregunta: "cómo solicito recuperación", respuesta: "Habla con el docente responsable para coordinar la recuperación." },
+
+      // Salud y seguridad
+      { pregunta: "qué hago si me enfermo en el colegio", respuesta: "Acude a la enfermería para recibir atención inmediata." },
+      { pregunta: "hay seguro escolar", respuesta: "Sí, el colegio cuenta con un seguro básico para emergencias escolares." },
+      { pregunta: "qué hacer en caso de emergencia", respuesta: "Sigue las indicaciones del personal y utiliza las rutas de evacuación señalizadas." },
+
+      // Preguntas sobre eventos especiales
+      { pregunta: "cuándo es la fiesta de aniversario", respuesta: "Se celebra el aniversario del colegio el 7 de junio de cada año." },
+      { pregunta: "hay concurso de talentos", respuesta: "Sí, realizamos concursos de talentos durante las fiestas patrias y aniversario." },
+      { pregunta: "cómo inscribirme a concursos", respuesta: "Consulta en la coordinación cultural para inscribirte y participar." },
+
+      // Preguntas frecuentes varias
+      { pregunta: "qué es bullying", respuesta: "El bullying es el acoso o maltrato entre estudiantes que no debemos permitir." },
+      { pregunta: "cómo reporto bullying", respuesta: "Informa a un docente o al área de psicología para tomar acciones." },
+      { pregunta: "hay actividades para padres", respuesta: "Sí, organizamos talleres y reuniones periódicas para padres de familia." },
+      { pregunta: "cómo me entero de reuniones", respuesta: "Recibirás notificaciones por parte de la dirección y docentes." },
+      { pregunta: "qué es la matrícula", respuesta: "La matrícula es el proceso de inscripción y registro oficial del estudiante en la institución." },
+
+      // Más preguntas sobre la institución
+      { pregunta: "cuántos estudiantes hay", respuesta: "Tenemos aproximadamente 1200 estudiantes matriculados." },
+      { pregunta: "qué niveles educativos ofrecen", respuesta: "Ofrecemos educación primaria y secundaria." },
+      { pregunta: "cuántos docentes trabajan aquí", respuesta: "Contamos con un equipo de más de 50 docentes especializados." },
+      { pregunta: "qué idiomas se enseñan", respuesta: "Se enseña español e inglés, y tenemos talleres de quechua." },
+      { pregunta: "hay actividades deportivas", respuesta: "Sí, fútbol, vóley, básquet y atletismo." },
+
+      // Preguntas sobre política y reglamento
+      { pregunta: "qué normas debo seguir", respuesta: "Debes respetar el reglamento interno que promueve disciplina, respeto y buen comportamiento." },
+      { pregunta: "hay uniforme escolar", respuesta: "Sí, el uso del uniforme es obligatorio durante las clases." },
+      { pregunta: "qué pasa si falto a clases", respuesta: "Las faltas deben ser justificadas y puedes perder evaluaciones si no recuperas." },
+      { pregunta: "cómo justifico una falta", respuesta: "Presenta una nota firmada por tus padres o certificado médico a la administración." },
+
+      // Preguntas sobre oportunidades y desarrollo
+      { pregunta: "hay programas de intercambio", respuesta: "Estamos trabajando en programas de intercambio con colegios de otras regiones." },
+      { pregunta: "qué hago para ser líder estudiantil", respuesta: "Participa en las elecciones estudiantiles y demuestra compromiso." },
+      { pregunta: "hay becas deportivas", respuesta: "Sí, para estudiantes destacados en deportes." },
+
+      // Preguntas más técnicas o de programación (para tu chatbot)
+      { pregunta: "cómo puedo aprender programación", respuesta: "Puedes iniciar con lenguajes como Scratch, Python o JavaScript y practicar en línea." },
+      { pregunta: "qué es un lenguaje de programación", respuesta: "Es un conjunto de instrucciones que permiten a un computador realizar tareas específicas." },
+      { pregunta: "qué es inteligencia artificial", respuesta: "Es la capacidad de las máquinas para aprender y tomar decisiones similares a los humanos." },
+
+      // Horarios y asistencia
+      { pregunta: "cuál es el horario de atención de la secretaría", respuesta: "La secretaría atiende de 8:00 a.m. a 4:00 p.m. de lunes a viernes." },
+      { pregunta: "qué hago si llego tarde a clases", respuesta: "Debes reportarte en la secretaría para justificar tu llegada tardía." },
+      { pregunta: "cuántas faltas puedo tener", respuesta: "El máximo permitido es el 15% de las clases totales por bimestre." },
+      
+      // Inscripción y matrícula
+      { pregunta: "cuánto cuesta la matrícula", respuesta: "La matrícula es gratuita en nuestra institución pública." },
+      { pregunta: "qué documentos necesito para la inscripción", respuesta: "Necesitas DNI, certificado de estudios anteriores y partida de nacimiento." },
+      { pregunta: "hasta cuándo puedo inscribirme", respuesta: "La inscripción está abierta hasta finales de marzo cada año." },
+      
+      // Servicios y apoyos
+      { pregunta: "hay apoyo para estudiantes con discapacidad", respuesta: "Sí, contamos con un programa de inclusión y apoyos especializados." },
+      { pregunta: "qué tipo de apoyo psicológico hay", respuesta: "Ofrecemos asesoría individual y talleres de bienestar emocional." },
+      { pregunta: "hay tutorías para reforzamiento", respuesta: "Sí, los estudiantes pueden acceder a tutorías según su necesidad académica." },
+      
+      // Tecnología y acceso
+      { pregunta: "cómo puedo acceder al wifi del colegio", respuesta: "Solicita el usuario y contraseña en la oficina de tecnología." },
+      { pregunta: "hay computadoras para uso de estudiantes", respuesta: "Sí, contamos con un laboratorio con 30 computadoras." },
+      { pregunta: "cómo hago para usar la plataforma virtual", respuesta: "Ingresa con tu usuario en la sección 'Plataforma Virtual' en nuestra web." },
+      
+      // Eventos y actividades
+      { pregunta: "cuándo es la fiesta de aniversario", respuesta: "Se celebra cada 7 de junio con actividades culturales y deportivas." },
+      { pregunta: "hay actividades deportivas extracurriculares", respuesta: "Sí, fútbol, vóley y atletismo se practican en horarios extracurriculares." },
+      { pregunta: "cómo inscribirse en actividades culturales", respuesta: "Consulta en la coordinación cultural para inscribirte y participar." },
+      
+      // Académico y evaluaciones
+      { pregunta: "cómo puedo mejorar mis notas", respuesta: "Participa en clases, realiza tareas y usa los recursos de apoyo disponibles." },
+      { pregunta: "qué hago si pierdo un examen", respuesta: "Puedes solicitar una recuperación con tu profesor dentro del plazo establecido." },
+      { pregunta: "cuándo entregan los boletines", respuesta: "Los boletines se entregan al final de cada bimestre académico." },
+      
+      // Normas y reglamentos
+      { pregunta: "qué normas debo seguir en el colegio", respuesta: "Debes respetar el reglamento interno que promueve disciplina y respeto." },
+      { pregunta: "qué pasa si rompo una norma", respuesta: "Recibirás una amonestación y en casos graves, sanciones según el reglamento." },
+      { pregunta: "cómo puedo sugerir mejoras", respuesta: "Puedes presentar tus sugerencias en el buzón de la dirección o al representante estudiantil." },
+      
+      // Apoyo a padres
+      { pregunta: "cómo puedo contactar a los profesores", respuesta: "Los padres pueden comunicarse por correo o asistir a reuniones escolares." },
+      { pregunta: "hay talleres para padres", respuesta: "Sí, se realizan talleres sobre educación y apoyo familiar durante el año." },
+      { pregunta: "cuándo son las reuniones de padres", respuesta: "Las reuniones son trimestrales, con fechas publicadas en la web y avisos." },
+      
+      // Preguntas sobre cultura escolar
+      { pregunta: "qué actividades se hacen en fiestas patrias", respuesta: "Desfiles, concursos, presentaciones artísticas y actos cívicos." },
+      { pregunta: "hay grupos estudiantiles", respuesta: "Sí, tenemos clubes de ciencia, literatura, deportes y medio ambiente." },
+      { pregunta: "cómo participar en el consejo estudiantil", respuesta: "Puedes postularte durante las elecciones estudiantiles anuales." },
+      
+      // Preguntas sobre infraestructura
+      { pregunta: "hay laboratorio de ciencias", respuesta: "Sí, contamos con laboratorios equipados para química, física y biología." },
+      { pregunta: "cómo está la biblioteca", respuesta: "La biblioteca tiene más de 2000 libros y espacios para lectura y estudio." },
+      { pregunta: "el colegio tiene acceso para discapacitados", respuesta: "Sí, hay rampas y baños adaptados para personas con movilidad reducida." },
+      
+      // Preguntas técnicas sobre informática
+      { pregunta: "qué es una plataforma educativa", respuesta: "Es un sistema en línea donde los estudiantes acceden a materiales y tareas." },
+      { pregunta: "qué navegador usar para la plataforma", respuesta: "Recomendamos Google Chrome o Mozilla Firefox actualizados." },
+      { pregunta: "qué hacer si olvido mi contraseña", respuesta: "Solicita el restablecimiento en la oficina de tecnología o vía correo." },
+      
+      // Preguntas de interés general
+      { pregunta: "qué debo hacer si sufro bullying", respuesta: "Informa a un docente o al área de psicología para recibir ayuda inmediata." },
+      { pregunta: "hay actividades de voluntariado", respuesta: "Sí, organizamos campañas sociales en las que puedes participar." },
+      { pregunta: "cómo cuidar el medio ambiente en el colegio", respuesta: "Participa en campañas de reciclaje y usa responsablemente los recursos." },
+      
+      // Preguntas sobre idiomas y formación
+      { pregunta: "qué idiomas se enseñan", respuesta: "Se enseña español e inglés, con talleres opcionales de quechua." },
+      { pregunta: "hay cursos de computación", respuesta: "Sí, ofrecemos talleres de computación básica y programación." },
+      { pregunta: "qué hace el área de educación física", respuesta: "Fomenta la actividad deportiva y hábitos saludables en los estudiantes." },
+      
+      // Preguntas sobre contacto y redes sociales
+      { pregunta: "cuál es el teléfono del colegio", respuesta: "Puedes llamarnos al (01) 234-5678 en horario de oficina." },
+      { pregunta: "tienen Facebook", respuesta: "Sí, https://www.facebook.com/profile.php?id=61551563597462" },
+      { pregunta: "dónde está la institución en el mapa", respuesta: "En Google Maps busca 'IE Francisco Bolognesi, Ilo' para la ubicación exacta." },
+      
+      // Preguntas sobre inscripciones
+      { pregunta: "cómo hago la preinscripción", respuesta: "Ingresa a la sección 'Inscripción' en nuestra web y completa el formulario." },
+      { pregunta: "puedo inscribir a un menor de edad", respuesta: "Sí, los padres o tutores legales pueden realizar la inscripción." },
+      { pregunta: "qué horarios hay para la inscripción", respuesta: "La inscripción es de 8:00 a.m. a 3:00 p.m. en la secretaría." },
+      
+      // Preguntas sobre actividades y eventos especiales
+      { pregunta: "hay excursiones escolares", respuesta: "Sí, organizamos excursiones educativas durante el año escolar." },
+      { pregunta: "qué días se celebra el Día del Logro", respuesta: "Se celebra dos veces al año para mostrar los avances estudiantiles." },
+      { pregunta: "cómo participar en concursos escolares", respuesta: "Consulta con tus profesores o la coordinación académica para inscribirte." },
+      
+      // Preguntas adicionales para que el bot se sienta más natural
+      { pregunta: "cómo estás", respuesta: "¡Estoy listo para ayudarte con lo que necesites!" },
+      { pregunta: "qué puedes hacer", respuesta: "Puedo responder tus dudas sobre la IE Francisco Bolognesi, eventos, servicios y más." },
+      { pregunta: "gracias", respuesta: "¡Con gusto! Si tienes otra pregunta, aquí estaré." },
+      { pregunta: "adiós", respuesta: "¡Hasta luego! Que tengas un buen día." }
+    ];
+
+    const fuse = new Fuse(respuestas, {
+      keys: ["pregunta"],
+      threshold: 0.45,
+    });
+
+    const saludos = ["hola", "buenas", "buenos días", "buenas tardes", "buenas noches"];
+    const despedidas = ["adios", "hasta luego", "nos vemos", "chao"];
+
+    // Función para limpiar texto (minúsculas, quitar signos)
+    function limpiarTexto(texto) {
+    return texto.toLowerCase().replace(/[.,?!]/g, '').trim();
+    }
+
+    // Función para detectar si el texto contiene alguna palabra clave
+    function contienePalabra(texto, palabras) {
+    return palabras.some(palabra => texto.includes(palabra));
+    }
+
+    // Cargar historial desde localStorage
+    let historial = JSON.parse(localStorage.getItem("chatHistorial") || "[]");
+    historial.forEach(msg => {
+      chatbotBody.insertAdjacentHTML(
+        "beforeend",
+        `<div class="${msg.who}-message"><strong>${msg.who === "user" ? "Tú" : "Bot"}:</strong> ${msg.text}</div>`
+      );
+    });
+    chatbotBody.scrollTop = chatbotBody.scrollHeight;
+
+    function scrollBottom() {
+      chatbotBody.scrollTo(0, chatbotBody.scrollHeight);
+    }
+
+    function guardarEnHistorial(who, text) {
+      historial.push({ who, text });
+      localStorage.setItem("chatHistorial", JSON.stringify(historial));
+    }
+
+    function getBotResponse(input) {
+      input = input.toLowerCase();
+      if (saludos.some(s => input.includes(s))) {
+        return "¡Hola! ¿En qué puedo ayudarte?";
+      }
+      if (despedidas.some(d => input.includes(d))) {
+        return "¡Hasta pronto! Cuídate.";
+      }
+      if (input.includes("gracias")) {
+        return "¡De nada! Estoy para ayudarte.";
+      }
+      if (input === "si" || input === "sí") {
+        return "Perfecto, dime más.";
+      }
+      if (input === "no") {
+        return "Entiendo. Si necesitas algo, dime.";
+      }
+
+      const resultado = fuse.search(input);
+      if (resultado.length > 0) {
+        return resultado[0].item.respuesta;
+      } else {
+        const sugerencias = [
+          "¿Quieres saber sobre la inscripción?",
+          "Puedes preguntar sobre los servicios del colegio.",
+          "Consulta fechas importantes como el Día del Logro."
+        ];
+        const aleatorias = sugerencias.sort(() => 0.5 - Math.random()).slice(0, 3);
+        return (
+          "Lo siento, aún no entiendo eso. Puedes intentar:<br>" +
+          "<ul style='margin-top: 0.5rem;'>" +
+          aleatorias.map(s => `<li>${s}</li>`).join("") +
+          "</ul>"
+        );
+      }
+    }
+
+    function enviarMensaje() {
+      const pregunta = chatbotInput.value.trim();
+      if (pregunta === "") return;
+
+      chatbotBody.insertAdjacentHTML(
+        "beforeend",
+        `<div class="user-message"><strong>Tú:</strong> ${pregunta}</div>`
+      );
+      guardarEnHistorial("user", pregunta);
+
+      const respuesta = getBotResponse(pregunta);
+      chatbotBody.insertAdjacentHTML(
+        "beforeend",
+        `<div class="bot-message"><strong>Bot:</strong> ${respuesta}</div>`
+      );
+      guardarEnHistorial("bot", respuesta);
+
+      chatbotInput.value = "";
+      chatbotInput.focus();
+      scrollBottom();
+    }
+
+    chatbotInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        enviarMensaje();
+      }
+    });
+
+    sendBtn.addEventListener("click", function () {
+      enviarMensaje();
+    });
+  });
+  </script>
+   
+    <!-- Aquí va el footer -->
+  <footer class="footer-main">
+    <p>&copy; 2025 IE Francisco Bolognesi. Todos los derechos reservados.</p>
+    <p>
+      <a href="https://www.facebook.com/profile.php?id=61551563597462" target="_blank">Facebook oficial</a> |
+      <a href="#contacto">Contáctenos</a>
+    </p>
+  </footer>
+
+  <style>
+    .footer-main {
+      background-color: #294d7a;
+      color: #dce6f2;
+      text-align: center;
+      padding: 20px 10px;
+      margin-top: 60px;
+      font-size: 1rem;
+    }
+
+    .footer-main a {
+      color: #f0b849;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .footer-main a:hover {
+      color: #d6a90e;
+    }
+  </style> 
+  
+
+
+</body>
+</html> 
